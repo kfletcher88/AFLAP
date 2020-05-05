@@ -30,7 +30,7 @@ mkdir -p $t
 #0. Dependency Check
 
 #a. ABYSS
-AB=&(ABYSS --version | head -n 1)
+AB=$(ABYSS --version | head -n 1)
 if [[ $AB =~ ^ABYSS ]]; then echo "$AB detected"; else echo "ABySS not detected, please modify your PATH" ; exit 1 ; fi
 
 #b JELLYFISH
