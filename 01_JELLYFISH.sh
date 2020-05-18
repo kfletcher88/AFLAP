@@ -44,9 +44,16 @@ Pcou=$(wc -l 00_AFLAPtmp/F0.txt | awk '{print $1}')
 if [[ $Pcou == 2 ]]
 then
 echo -e "$Pcou parents detected. Simple! Beginning k-mer counting"
-else if [[ $Pcou > 2 ]]
+elif [[ $Pcou > 2 ]]
 then
 echo -e "$Pcou parents detected. Not so simple! Determining crosses"
+elif [[ $Pcou < 2 ]]
+then
+echo -e "$Pcou parents detected. Two or more F0 should be specified in the pedigree file to run AFLAP. Exiting."
+exit 1
+fi
+
+
 
 #Split into seperate loop from here
 #Should add condition that there is at lease one common parent
