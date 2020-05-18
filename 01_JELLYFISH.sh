@@ -36,7 +36,6 @@ rm -r 00_AFLAPtmp
 exit 1 
 fi
 
-
 #Calculate number of parents in pedigree file:
 awk '$2 == 0 {print $1}' $Ped | sort -u > 00_AFLAPtmp/F0.txt
 Pcou=$(wc -l 00_AFLAPtmp/F0.txt | awk '{print $1}')
@@ -47,15 +46,27 @@ echo -e "$Pcou parents detected. Simple! Beginning k-mer counting"
 elif [[ $Pcou > 2 ]]
 then
 echo -e "$Pcou parents detected. Not so simple! Determining crosses"
+sort -uk1,1 $Ped | awk '$2 > 0 {print $2, $4, $5}' | sort | uniq -c > 00_AFLAPtmp/Crosses.txt
+CrossCou=$(cat 00_AFLAPtmp/Crosses.txt | wc -l)
+	if [[ $Crou > 4 ]]
+	then
+	echo "$CrossCou crosses identified in pedigree file. This may take a long time to process. Crosses include:"
+	sort -nrk 00_AFLAPtmp/Crosses.txt | head -n 5 | awk '{print $3, $4}'
+	else
+	echo "$CrossCou crosses identified:"
+	cat 00_AFLAPtmp/Crosses.txt | awk '{print $3, $4}'
+	fi
 elif [[ $Pcou < 2 ]]
 then
 echo -e "$Pcou parents detected. Two or more F0 should be specified in the pedigree file to run AFLAP. Exiting."
 exit 1
 fi
 
-
-
-#Split into seperate loop from here
+#If more than two parents are identified, identify the crosses.
+#Eventually this can just be moved into the previous loop.
+if [[ $Pcou > 2 ]]
+then
+fi
 #Should add condition that there is at lease one common parent
 
 sort -uk1,1 $Ped | awk '$2 > 0 {print $2, $4, $5}' | sort | uniq -c > 00_AFLAPtmp/Crosses.txt
