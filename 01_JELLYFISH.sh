@@ -1,19 +1,40 @@
 #!/bin/bash -l
 #Usage Statement
 
-while getopts ':hP:' option; do
+while getopts ':hP:t:m:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
                          ;;
                 P)  Ped=$OPTARG
                          ;;
+		t)  threads=$OPTARG
+			;;
+		m)  mer=$OPTARG
+			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
 #                    echo "$usage"
                     exit 1
                          ;;
         esac
 done
+
+#Check arguments.
+if [[ -z $Ped ]]; then
+        echo -e "ERROR: Pedigree file not provided\n"
+        echo "$usage"
+        exit 1
+fi
+#Set defaults if not specified.
+if [[ -z $threads ]]; then
+echo "Threads not specified, will proceed with default [4]"
+threads=4
+fi
+
+if [[ -z $mer ]]; then
+echo "mer size not specified, will proceed with default [31]"
+mer=31
+fi
 
 #Set option for flexibility.
 mer=31
@@ -84,7 +105,6 @@ echo "$F2 F2 cross(es) identified."
 awk '$2 == 1 {print $3, $4}' AFLAP_tmp/01/Crosses.txt | sort -u | uniq -c > AFLAP_tmp/01/ParentsToCompare.txt
 head AFLAP_tmp/01/ParentsToCompare.txt
 fi
-
 
 #Identify which parents the map is to be constructed of.
 awk '$2 == 0 && $4 ~ /NA/ {print $1}' $Ped | sort -u > AFLAP_tmp/01/NoLA.txt
