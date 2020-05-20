@@ -164,7 +164,7 @@ for g in `cat AFLAP_tmp/01/Prog.txt`
 	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ProgCounts/$g.jf${mer} <(zcat $Reads)
 	fi
   done
-echo "\nk-mer counting done!"
+echo -e "\nk-mer counting done!"
 exit
 #for g in `seq 1 1 $Pcou` ; do echo $g ; done
 #Were user specified boundaries provided:
