@@ -82,7 +82,7 @@ elif [[ F1 == 0 && F2 > 0]]
 then
 echo "$F2 F2 cross(es) identified."
 awk '$2 == 1 {print $3, $4}' AFLAP_tmp/01/Crosses.txt | sort -u | uniq -c > AFLAP_tmp/01/ParentsToCompare.txt
-head 00_AFLAPtmp/ParentsToCompare.txt
+head AFLAP_tmp/01/ParentsToCompare.txt
 fi
 
 
