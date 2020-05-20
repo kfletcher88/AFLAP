@@ -110,23 +110,30 @@ fi
 #K-mer counting.
 #Parents.
 #Check for existene of HASH. If it exists, don't overwrite.
+mkdir -p ParentalCounts
 Pcou=$(cat 00_AFLAPtmp/LA.txt | wc -l)
 echo -e "Begining k-mer counting for $Pcou parents"
 for g in `cat 00_AFLAPtmp/LA.txt` 
-do
-echo -e "Begining k-mer counting for $g"
-Reads=$(awk -v var="$g" '$1 == var {print $2}' $Ped | tr '\n' ' ')
-jellyfish count -s 1G -t $thread -m $mer -C -o ParentalCounts/$g.jf${mer} <(zcat $Reads)
+  do
+  echo -e "Begining k-mer counting for $g"
+  Reads=$(awk -v var="$g" '$1 == var {print $2}' $Ped | tr '\n' ' ')
+  jellyfish count -s 1G -t $thread -m $mer -C -o ParentalCounts/$g.jf${mer} <(zcat $Reads)
 done
 echo -e "\nParental K-mer counting complete!\nOn to the progeny!\n"
 #Progeny.
-awk 
-
-
+mkdir -p ProgCounts
+awk '$2 != 0 {print $1}' | sort -u > 00_AFLAPtmp/Prog.txt
+ProgCou=$(cat 00_AFLAPtmp/Prog.txt | wc -l)
+echo -e "Begining k-mer counting for $ProgCou progeny"
+for g in `cat 00_AFLAPtmp/Prog.txt`
+  do
+  echo -e "Begining k-mer counting for $g"
+  Reads=$(awk -v var="$g" '$1 == var {print $2}' $Ped | tr '\n' ' ')
+  jellyfish count -s 1G -t $thread -m $mer -C -o ProgCounts/$g.jf${mer} <(zcat $Reads)
+done
+echo "\nk-mer counting done!"
 exit
 #for g in `seq 1 1 $Pcou` ; do echo $g ; done
 #Were user specified boundaries provided:
-awk -v var="$g" '$1 == var && NF == 5 {print $4, $5}' | head -n 1 > 00_AFLAPtmp/$g.cutoffs
-CO=$(cat 00_AFLAPtmp/$g.cutoffs | wc -l)
 
 
