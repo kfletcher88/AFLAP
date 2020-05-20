@@ -134,7 +134,7 @@ echo -e "Begining k-mer counting for $PLA parents"
 for g in `cat AFLAP_tmp/01/LA.txt` 
   do
 #Check if has has already been created
-	if [[ -e AFLAP_Intermediate/ParentalCounts/$g.fj${mer} ]]
+	if [[ -e AFLAP_Intermediate/ParentalCounts/$g.jf${mer} ]]
 	then
 #If so, skip.
 	echo -e "$mer hash detected for $g. Skipping. Not correct, cancel and delete ParentalCounts/$g.fj${mer}, or run from clean directory"
@@ -155,7 +155,7 @@ echo -e "Begining k-mer counting for $ProgCou progeny"
 for g in `cat AFLAP_tmp/01/Prog.txt`
   do
 #Check if has has already been created
-        if [[ -e AFLAP_Intermediate/ProgenyCounts/$g.fj${mer} ]]
+        if [[ -e AFLAP_Intermediate/ProgenyCounts/$g.jf${mer} ]]
         then
 #If so, skip.
         echo -e "$mer hash detected for $g. Skipping. Not correct, cancel and delete ParentalCounts/$g.fj${mer}, or run from clean directory"
