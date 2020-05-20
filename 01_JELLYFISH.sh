@@ -36,7 +36,7 @@ echo "mer size not specified, will proceed with default [31]"
 mer=31
 fi
 
-echo "Beginning AFLAP"
+echo "Beginning AFLAP script 1/5"
 
 #0. Dependency Check
 #JELLYFISH
@@ -105,6 +105,7 @@ head AFLAP_tmp/01/ParentsToCompare.txt
 fi
 
 #Identify which parents the map is to be constructed of.
+#Mostly this information will be used in later scripts.
 awk '$2 == 0 && $4 ~ /NA/ {print $1}' $Ped | sort -u > AFLAP_tmp/01/NoLA.txt
 awk '$2 == 0 {print $1}' $Ped | sort -u | join -v 1 - AFLAP_tmp/01/NoLA.txt > AFLAP_tmp/01/LA.txt
 LMB=$(cat AFLAP_tmp/01/LA.txt | wc -l)
@@ -127,7 +128,7 @@ fi
 #K-mer counting.
 #Parents.
 mkdir -p AFLAP_Intermediate/ParentalCounts
-PLA=$(cat AFLAP_tmp/01/LA.txt | wc -l)
+PLA=$(cat AFLAP_tmp/01/F0.txt | wc -l)
 echo -e "Begining k-mer counting for $PLA parents"
 for g in `cat AFLAP_tmp/01/F0.txt`
   do
