@@ -131,11 +131,15 @@ for g in `cat AFLAP_tmp/01/LA.txt`
                         Lo=$(printf %.0f $(echo $HomPeak*0.75 | bc -l))
                         Up=$(printf %.0f $(echo $HomPeak*1.5 | bc -l))
                         fi
-		echo "Lower boundary for $g set to $Lo, upper boundary to $Up"
 		fi
+	echo "Lower boundary for $g set to $Lo, upper boundary to $Up"
 	fi
-#  jellyfish dump 
-#  Rscript 
+  if [[ -e AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
+  then 
+  echo -e "\n$g ${mer}-mer previously extracted between $Lo and $Up. Delete ${g}_m${mer}_L${Lo}_U${Up}.fa to rebuild." 
+  else
+  jellyfish dump -U $Up -L $Lo -o AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer}
+  Rscript bin/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
   done
 
 #Obtain boundaries from Pedigree file (NF == 5). If boundaris not present (NF < 5) calculate and infer boundaries (percentage, 50% up, 50% down?)
