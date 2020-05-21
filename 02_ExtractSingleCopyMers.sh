@@ -132,7 +132,13 @@ for g in `cat AFLAP_tmp/01/LA.txt`
                         Lo=$(printf %.0f $(echo $HomPeak*0.75 | bc -l))
                         Up=$(printf %.0f $(echo $HomPeak*1.5 | bc -l))
                         fi #3
-		fi #2
+		elif [[ $Hom != 1 && $Het != 1 ]]
+		then
+		echo -e "\nOnly one peak found. This will be used to obtain markers."
+		Lo=$(printf %.0f $(echo $Peak*0.75 | bc -l))
+		Up=$(printf %.0f $(echo $Peak*1.5 | bc -l))
+ 		fi #2
+	echo -e "Peak boundary estimation complete. They are visible on AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png\n"
 	fi #1
   echo "Lower boundary for $g set to $Lo, upper boundary to $Up"
   echo -e "$g\t$Lo\t$Up" >> AFLAP_tmp/02/Boundaries.txt
@@ -143,7 +149,7 @@ for g in `cat AFLAP_tmp/01/LA.txt`
   jellyfish dump -U $Up -L $Lo -o AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer}
   Kco=$(grep -c '^>'  AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa) 
   echo "$Kco ${mer}-mers extracted from $g"
-#  Rscript bin/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
+  Rscript bin/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
   fi
   done
 exit
