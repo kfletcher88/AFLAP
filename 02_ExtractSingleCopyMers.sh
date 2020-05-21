@@ -45,8 +45,8 @@ if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected" >&2 ; else echo "jellyfish 
 
 #Make new tmp for second script.
 mkdir -p AFLAP_tmp/02
-
 mkdir -p AFLAP_Intermediate/ParentalHisto
+echo "#Boundaries to follow" boundaries.txt
 #Obtain Histograms.
 echo -e "\nGenerating histograms for F0 to undergo linkage analysis"
 for g in `cat AFLAP_tmp/01/LA.txt`
@@ -60,8 +60,8 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 	jellyfish histo AFLAP_Intermediate/ParentalCounts/$g.jf${mer} > AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo
 	echo -e "Histogram for $g generated"
 	fi
-	#Check to see if Coverage boundaries provided by the user?
-	BC=$(awk -v var="$g" '$1 == var && NF == 5 {print $1, $4, $5}' | head -n 1 | wc -l)
+  #Check to see if Coverage boundaries provided by the user?
+  BC=$(awk -v var="$g" '$1 == var && NF == 5 {print $1, $4, $5}' | head -n 1 | wc -l)
 	if [[ BC == 1 ]]
 	then
 	echo -e "User has supplied lower and upper boundaries for $g ${mer}-mer cut-offs.\nOn to extraction"
@@ -133,25 +133,15 @@ for g in `cat AFLAP_tmp/01/LA.txt`
                         fi
 		fi
 	echo "Lower boundary for $g set to $Lo, upper boundary to $Up"
+	echo -e "$g\t$Lo\t$Up" >> AFLAP_tmp/02/Boundaries.txt
 	fi
   if [[ -e AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
   then 
   echo -e "\n$g ${mer}-mer previously extracted between $Lo and $Up. Delete ${g}_m${mer}_L${Lo}_U${Up}.fa to rebuild." 
   else
   jellyfish dump -U $Up -L $Lo -o AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer}
+  Kco=$(grep -c '^>'  AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa) 
+  echo "$Kco ${mer}-mers extracted from $g"
   Rscript bin/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
   done
-
-#Obtain boundaries from Pedigree file (NF == 5). If boundaris not present (NF < 5) calculate and infer boundaries (percentage, 50% up, 50% down?)
-
-
-
-#Extract k-mers using boundaries.
-jellyfish dump -U $Up -L $Lo -o ${Out}_L${Lo}_U${Up}.fa $Hash
- 
-Kco=$(grep -c '^>' ${Out}_L${Lo}_U${Up}.fa)
-echo "$Kco k-mers extracted from $Hash using $JF"
-
-#Plot k-mer histogram and add vertical lines.
-
 exit
