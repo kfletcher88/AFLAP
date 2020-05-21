@@ -1,6 +1,18 @@
 #!/bin/bash -l
 #Usage Statement
 
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-t] [-m] -- A script to obtain JELLYFISH hashes to be used when running AFLAP.
+
+Options
+	-h show this help message
+	-P Pedigree file, required. See AFLAP README for more information.
+	-m K-mer size. Optional. Default [31]
+	-t Threads for JELLYFISH counting. Optional. Defauly [4]
+
+Temporary files will be output to AFLAP_tmp/01. This directory can be deleted with little consequence after completting AFLAP.
+Intermediate results will be written to AFLAP_Intermediate. These may be useful if wanting to run AFLAP with different parameters."
+
 while getopts ':hP:t:m:' option; do
         case "$option" in
                 h)  echo "$usage"
@@ -13,7 +25,7 @@ while getopts ':hP:t:m:' option; do
 		m)  mer=$OPTARG
 			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
-#                    echo "$usage"
+                    echo "$usage"
                     exit 1
                          ;;
         esac
