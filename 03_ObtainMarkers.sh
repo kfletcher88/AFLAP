@@ -7,16 +7,10 @@ while getopts ':hM:1:2:W:p:' option; do
                 h)  echo "$usage"
                          exit
                          ;;
-                M)  Mark1=$OPTARG
+                P)  Ped=$OPTARG
                          ;;
-                1)  Pare1=$OPTARG
+                m)  mer=$OPTARG
                          ;;
-                2)  Pare2=$OPTARG
-                         ;;
-#                W)  Mark2=$OPTARG
-#                         ;;
-		p)  Out=$OPTARG
-			 ;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
                     exit 1
@@ -27,6 +21,42 @@ done
 t=AFLAP_tmp
 mkdir -p $t
 
+#Check arguments.
+if [[ -z $Ped ]]; then
+        echo -e "ERROR: Pedigree file not provided\n"
+        echo "$usage"
+        exit 1
+fi
+if [[ -z $mer ]]; then
+echo "mer size not specified, will proceed with default [31]"
+mer=31
+fi
+
+echo -e "\nBeginning AFLAP script 3/5"
+
+#Check for infor from previous scripts.
+if [[ -e AFLAP_tmp/01/LA.txt ]]
+then
+echo -e "\nLinkage analysis to be run using markers derived from:"
+cat AFLAP_tmp/01/LA.txt
+else
+echo -e "\n Could not find output of previous scripts. Please rerun 01_JELLYFISH.sh."
+exit 1
+fi
+
+if [[ -e AFLAP_tmp/02/Boundaries.txt ]]
+then
+echo -e "${mer}-mer boundaries identified from previous run:"
+head AFLAP_tmp/02/Boundaries.txt
+else
+echo -e "\n Could not find output of previous scripts. Please rerun 02_ExtractSingleCopyMers.sh."
+exit 1
+fi
+
+#Make new tmp and Intermdiate directories:
+mkdir -p AFLAP_tmp/03
+mkdir -p AFLAP_Intermediate/ParentalMarkers
+
 #0. Dependency Check
 
 #a. ABYSS
@@ -36,6 +66,8 @@ if [[ $AB =~ ^ABYSS ]]; then echo "$AB detected"; else echo "ABySS not detected,
 #b JELLYFISH
 JF=$(jellyfish --version)
 if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected"; else echo "jellyfish not detected, please modify your PATH" ; exit 1 ; fi
+
+for g in 
 
 #Could run below in a sub script to run both in parallel.
 #./GetMarkers.sh -M $Mark1 -1 $Pare1 -2 $Pare2 -p $Out
