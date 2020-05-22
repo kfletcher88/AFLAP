@@ -34,11 +34,20 @@ fi
 
 echo -e "\nBeginning AFLAP script 3/5"
 
-#Check for infor from previous scripts.
+#Check for required tmp files from previous scripts.
 if [[ -e AFLAP_tmp/01/LA.txt ]]
 then
-echo -e "\nLinkage analysis to be run using markers derived from:"
+echo -e "\nMarkers to be derived from:"
 cat AFLAP_tmp/01/LA.txt
+else
+echo -e "\n Could not find output of previous scripts. Please rerun 01_JELLYFISH.sh."
+exit 1
+fi
+
+if [[ -e AFLAP_tmp/01/Crosses.txt ]]
+then
+echo -e "Crosses to be analyzed include:"
+head AFLAP_tmp/01/Crosses.txt
 else
 echo -e "\n Could not find output of previous scripts. Please rerun 01_JELLYFISH.sh."
 exit 1
@@ -67,7 +76,59 @@ if [[ $AB =~ ^ABYSS ]]; then echo "$AB detected"; else echo "ABySS not detected,
 JF=$(jellyfish --version)
 if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected"; else echo "jellyfish not detected, please modify your PATH" ; exit 1 ; fi
 
-for g in 
+#Only assemble markers for those which boundaries were identified.
+for g in `cat AFLAP_tmp/01/LA.txt`
+	echo -e "Begining analysis for $g"
+#1. Identify upper and lower boundaries for file ID and filtering.
+	echo -e "Identifying ${mer}-mer boundaries used previously."
+	Lo=$(awk -v var="$g" '$1 == var {print $2}' AFLAP_tmp/02/Boundaries.txt)
+	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
+	echo -e "Lower boundary set to $Lo"
+	echo -e "Upper boundary set to $Up"
+		if [[ -e AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
+		then
+		echo -e "Redults with these boundaries detected. Good to proceed."
+		else
+		echo -e "Hmm can't find results with these boundaries. Please try to rerun the pipeline."
+		exit 1
+		fi
+#2. Identify opposing parental hashes to filter against.
+	echo -e "Identifyng parents crossed to $g"
+	awk '{print $3, $4}' AFLAP_tmp/01/Crosses.txt | awk -v var="$g" '$0 ~ var {print $1"\n"$2}' | awk -v var="$g" '$1 != var' > AFLAP_tmp/03/${g}_CrossedTo.txt
+	echo -e "$g identified as crossed to:"
+	head AFLAP_tmp/03/${g}_CrossedTo.txt
+	cp AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
+	#Copied into tmp so we can overwrite in the next stage.
+#3. Filter against opposing parents (another loop?)
+	for f in cat `AFLAP_tmp/03/${g}_CrossedTo.txt`
+	# Identify opposing parental hashes.
+		if  [[ -e AFLAP_Intermediate/ParentalCounts/$f.jf${mer} ]]
+		then
+		echo "Intersecting $g with $f"
+	# Filter and overwrite input.
+		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa test/NewSF5xP24/AFLAP_Intermediate/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i,"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt
+		mv AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
+		M1cou=$(grep -c '^>' AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa)
+		echo "$Mlcou $g ${mer}-mers remain after filtering against $f"
+		else
+		echo -e "JELLYFISH results of $f can't be located. Please rerun 01_JELLYFISH.sh."
+		exit 1
+		fi
+	done
+#4. Assemble
+	ABYSS -k25 -c0 -e0 AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa -o AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa
+#5. Extract
+	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 >= 61 {print $1"\n"substr($4,10,31)}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa
+#6. Refilter against self for mers between boundaries.
+	jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer}  | awk -v Low="$Lo" -v Up="$Up" '$2 >= Low && $2 <= Up {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
+#7. Refilter against other parents (another loop). 
+	for f in cat `AFLAP_tmp/03/${g}_CrossedTo.txt`
+		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa test/NewSF5xP24/AFLAP_Intermediate/ParentalCounts/$f.jf${mer}  | awk '$2 == 0 {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa
+		mv AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
+	done
+#8. Export final marker set with ABySS conserved headers.
+
+#9. Export stats.
 
 #Could run below in a sub script to run both in parallel.
 #./GetMarkers.sh -M $Mark1 -1 $Pare1 -2 $Pare2 -p $Out
