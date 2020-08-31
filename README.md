@@ -67,8 +67,9 @@ Q: My run crashed halfway through, do I have to start again?\
 A: Yes, but AFLAP will detect intermediate files and not overwrite them, therefore it should progress to the last point quite quickly.
 
 
-Q: I want to run multiple times with different coverage cutoffs, is it possible?\
-A: Yes, AFLAP stores parametes in the file names and will write new files if new parameters are detected.
+Q: I want to run multiple times with different coverage cutoffs/k-mer sizes, is it possible?\
+A: Yes, AFLAP stores parametes in the file names and will write new files if new parameters are detected.\
+For example JELLYFISH results calculated at 21 or 31 basepairs will be suffixed jf21 or jf31 respectively. The resulting genotype tables will have "m21" or "m31" in there file names.
 
 
 Q: I was to add individuals to my Pedigree file, do I have to start in a new directory/run the full pipeline on every individual?\
