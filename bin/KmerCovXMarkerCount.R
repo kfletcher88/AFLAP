@@ -10,5 +10,5 @@ geom_point()+
 geom_text_repel()+
 theme_minimal()+
 labs(x="K-mer coverage", y="Marker Count")
-dev.off()
+null <- dev.off()
 

@@ -19,4 +19,4 @@ geom_point(data=M62, aes(x=V1,y=den, color=">k+k-1"))+
 geom_line(data=Mall, aes(x=V1, y=den), color="black")+
 theme_minimal()+
 labs(x="Marker Presence", y="Marker Density", Color="Marker Class")
-dev.off()
+null <- dev.off()
