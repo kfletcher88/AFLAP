@@ -28,7 +28,7 @@ R packages can be check by running:
 ```
 Rscript bin/PackageCheck.R
 ```
-On your system.
+on your system.
 
 ## Custom pedigree file.
 The pedigree file outlines the pedigree of the cross to be analyzed and the location of the reads which are going to be analyzed. This is done by three mandatory tab delimited fields, two optional.
@@ -62,14 +62,14 @@ ERR1432492	2	ReadsEBI/ERR1432492_2.fastq.gz	Col	Ler
 
 Currently AFLAP is launched using the shell script `runAFLAP.sh` which accepts multiple options. 
 
-##Intermediate Results
+## Intermediate Results
 
 
 
-##Final Results
+## Final Results
 
 
-##Frequently Asked Questions
+## Frequently Asked Questions
 Q: My run crashed halfway through, do I have to start again?
 A: Yes, but AFLAP will detect intermediate files and not overwrite them, therefore it should progress to the last point quite quickly.
 
