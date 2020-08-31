@@ -8,10 +8,9 @@ Options
 	-h show this help message
 	-P Pedigree file, required. See AFLAP README for more information.
 	-m K-mer size. Optional. Default [31]
-	-t Threads for JELLYFISH counting. Optional. Defauly [4]
+	-t Threads for JELLYFISH counting. Optional. Default [4]
 
-Temporary files will be output to AFLAP_tmp/01. This directory can be deleted with little consequence after completting AFLAP.
-Intermediate results will be written to AFLAP_Intermediate. These may be useful if wanting to run AFLAP with different parameters."
+Temporary files will be output to AFLAP_tmp/01."
 
 while getopts ':hP:t:m:' option; do
         case "$option" in
@@ -47,8 +46,6 @@ if [[ -z $mer ]]; then
 echo "mer size not specified, will proceed with default [31]"
 mer=31
 fi
-
-echo "Beginning AFLAP script 1/5"
 
 #0. Dependency Check
 #JELLYFISH
