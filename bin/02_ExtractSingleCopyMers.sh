@@ -80,12 +80,12 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 	HomUp=$(printf %.0f $(echo $Peak*2.1 | bc -l))
 	HetLo=$(printf %.0f $(echo $Peak*0.4 | bc -l))
 	HetUp=$(printf %.0f $(echo $Peak*0.6 | bc -l))
-		if [[ $HomPeak > $HomLo && $HomTest < $HomUp ]] #2
+		if (( $HomPeak > $HomLo && $HomTest < $HomUp )) #2
 		then
 		echo "Additional peak detected at $HomPeak"
 		Hom=1
 		fi #2
-		if [[ $HetPeak > $HetLo && $HetPeak < $HetUp ]] #2
+		if (( $HetPeak > $HetLo && $HetPeak < $HetUp )) #2
 		then
 		echo "Additional peak detected at $HetPeak"
 		Het=1

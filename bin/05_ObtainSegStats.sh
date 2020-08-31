@@ -29,6 +29,7 @@ echo -e "\n Could not find output of previous scripts. Please rerun full pipelin
 exit 1
 fi
 
+mkdir -p AFLAP_tmp/05/FilteredCall
 mkdir -p AFLAP_Intermediate/SegregationInformation
 mkdir -p AFLAP_Results
 #BASH math
@@ -47,8 +48,9 @@ do
 	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
 	if [[ -e AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv ]]
 	then
+#Progeny counter
 		ProC=$(awk 'NR == 1 {print NF-2}' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv)
-		echo "Genotype table for $g detected. Summarizing"
+		echo "Genotype calls for $g detected. Summarizing"
 		sed 's/_/ /' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | awk -v var="$kk" '$3 == var {for (i=4; i<=NF;i++) j+=$i; print j; j=0 }' | sort -n | uniq -c | awk -v var=$ProC '{print $2/var, $1}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerEqual${kk}.hist
 		sed 's/_/ /' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | awk -v var="$kk" '$3 > var {for (i=4; i<=NF;i++) j+=$i; print j; j=0 }' | sort -n | uniq -c | awk -v var=$ProC '{print $2/var, $1}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerOver${kk}.hist
 		sed 's/_/ /' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | awk '{for (i=4; i<=NF;i++) j+=$i; print j; j=0 }' | sort -n | uniq -c | awk -v var=$ProC '{print $2/var, $1}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_AllMarkers.hist
@@ -76,18 +78,26 @@ do
 			fi
 		done | awk -v OFS='\t' '{if ($2 == 0) $3 = 0; print $0}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
 		Rscript $DIR/bin/KmerCovXMarkerCount.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_KmerCovXMarkerCount.png
-#Something like this should be placed before the genotype table, so low coverage isolates are not incorporated.
 		LowCov=$(awk '$3 < 2' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt | wc -l)
 		if (( $LowCov >= 1))
 		then
-		awk '$3 < 3 {print $1" appears to be low coverage, will be excluded"}' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
+		awk '$3 < 2 {print $1" appears to be low coverage, will be excluded"}' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
 #Loop through the ones which are high coverage and link files into a new directory.
 #Build filtered genotype table
 #Create header.
 		fi
-		
+	cd  AFLAP_tmp/05/FilteredCall
+	for v in `awk '$3 >= 2 {print $1}' ../../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt` 
+	do
+		ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
+	done
+	cd ../
+	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
+	ls FilteredCall/* | sed "s/_${g}.*//" | sed 's/.*\///' > ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt
+#Removing means isolates can be excluded by editing the Pedigree file
+	rm FilteredCall/*
 	else
-		echo "Genotype table for $g not found. Please rerun the pipeline"
+		echo "Draft genotype table for $g not found. Please rerun the pipeline"
 		exit 1
 	fi
 done
