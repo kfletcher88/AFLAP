@@ -71,16 +71,25 @@ Currently AFLAP is launched using the shell script `runAFLAP.sh` which accepts m
 
 ## Frequently Asked Questions
 Q: My run crashed halfway through, do I have to start again?
+
 A: Yes, but AFLAP will detect intermediate files and not overwrite them, therefore it should progress to the last point quite quickly.
 
+
 Q: I want to run multiple times with different coverage cutoffs, is it possible?
+
 A: Yes, AFLAP stores parametes in the file names and will write new files if new parameters are detected.
 
+
 Q: I was to add individuals to my Pedigree file, do I have to start in a new directory/run the full pipeline on every individual?
+
 A: No, AFLAP will be able to use old results for previously generated data and generate the required files for the new sequences. Just add these to the Pedigree file.
 
+
 Q: I want to exclude individuals, should I delete intermediate files?
+
 A: No, just provide a Pedigree file without those individuals. The genotype table is directed with the Pedigree file, so will only build a table for isolates indicated with in.
 
+
 Q: I have added sequence to an individual and thus added lines to the pedigree file, will AFLAP detect this?
+
 A: No, though I might add something in the future. In the meantime, you can use the supplementary call `AFLAP.sh remove` to remove intermediate files for specific individuals. Rerunning AFLAP will then automatically recalculate those intermediate files. 
