@@ -27,8 +27,7 @@ echo "mer size not specified, will proceed with default [31]"
 mer=31
 fi
 
-echo -e "\nBeginning AFLAP script 2/5"
-
+DIR=$(dirname $0)
 #Check Info from 01_JELLYFISH.sh available.
 if [[ -e AFLAP_tmp/01/LA.txt ]]
 then
@@ -149,7 +148,7 @@ for g in `cat AFLAP_tmp/01/LA.txt`
   jellyfish dump -U $Up -L $Lo -o AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer}
   Kco=$(grep -c '^>'  AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa) 
   echo "$Kco ${mer}-mers extracted from $g"
-  Rscript bin/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
+  Rscript $DIR/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
   fi
   done
 exit

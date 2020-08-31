@@ -54,7 +54,7 @@ do
 		sed 's/_/ /' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | awk -v var="$kk" '$3 == var {for (i=4; i<=NF;i++) j+=$i; print j; j=0 }' | sort -n | uniq -c | awk -v var=$ProC '{print $2/var, $1}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerEqual${kk}.hist
 		sed 's/_/ /' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | awk -v var="$kk" '$3 > var {for (i=4; i<=NF;i++) j+=$i; print j; j=0 }' | sort -n | uniq -c | awk -v var=$ProC '{print $2/var, $1}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerOver${kk}.hist
 		sed 's/_/ /' AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | awk '{for (i=4; i<=NF;i++) j+=$i; print j; j=0 }' | sort -n | uniq -c | awk -v var=$ProC '{print $2/var, $1}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_AllMarkers.hist
-		Rscript $DIR/bin/SegStats.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerEqual${kk}.hist AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerOver${kk}.hist  AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_AllMarkers.hist AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerSeg.png
+		Rscript $DIR/SegStats.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerEqual${kk}.hist AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerOver${kk}.hist  AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_AllMarkers.hist AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerSeg.png
 		for h in `awk -v var="$g" '$4 == var || $5 == var {print $1}' $Ped | sort -u`
 		do
 			if [[ -e AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt ]]
@@ -77,7 +77,7 @@ do
 			echo "Counts could not be found. Please rerun AFLAP"
 			fi
 		done | awk -v OFS='\t' '{if ($2 == 0) $3 = 0; print $0}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
-		Rscript $DIR/bin/KmerCovXMarkerCount.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_KmerCovXMarkerCount.png
+		Rscript $DIR/KmerCovXMarkerCount.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_KmerCovXMarkerCount.png
 		LowCov=$(awk '$3 < 2' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt | wc -l)
 		if (( $LowCov >= 1))
 		then

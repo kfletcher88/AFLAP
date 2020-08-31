@@ -32,8 +32,6 @@ echo "mer size not specified, will proceed with default [31]"
 mer=31
 fi
 
-echo -e "\nBeginning AFLAP script 3/5"
-
 #Check for required tmp files from previous scripts.
 if [[ -e AFLAP_tmp/01/LA.txt ]]
 then
@@ -102,6 +100,10 @@ do
 	#Copied into tmp so we can overwrite in the next stage.
 #3. Filter against opposing parents (another loop?)
 	P0=$(cat AFLAP_tmp/03/${g}_CrossedTo.txt | tr '\n' '_' | sed 's/_$//')
+	if [[ -e AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
+		then
+		echo -e "Previously calculated markers detected. Want to calculate new markers, please deleted:\n./AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa\nSummary of markers available:\n./$g.MarkerReport.txt"
+		else
 	for f in `cat AFLAP_tmp/03/${g}_CrossedTo.txt`
 	do
 	# Identify opposing parental hashes.
@@ -149,7 +151,7 @@ Number of markers after refiltering: $MarCou
 Number of markers == 61 bp: $Mar61
 Number of markers > 61 bp: $Mar62
 " | tee $g.MarkerReport.txt
-
+	fi
 done
 
 exit
