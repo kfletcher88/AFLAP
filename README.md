@@ -1,4 +1,4 @@
-# AFLAP
+# Assembly Free Linkage Analysis Pipeline
 
 ## About
 
