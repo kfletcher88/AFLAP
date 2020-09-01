@@ -59,7 +59,7 @@ mkdir -p AFLAP_Intermediate
 #Pedigree file check
 #Check labels
 Flab=$(awk '$2 > 2' $Ped | wc -l)
-if [[ $Flab > 0 ]]; then echo "Pedigree file specifies individuals which are not F0, F1 ir F2. AFLAP has not been validated on this type of data so will terminate." ; exit 1 ; fi
+if [[ $Flab > 0 ]]; then echo "Pedigree file specifies individuals which are not F0, F1 or F2. AFLAP has not been validated on this type of data so will terminate." ; exit 1 ; fi
 Ilab=$(awk '{print $1, $2}' $Ped | sort -u | awk '{print $1}' | sort | uniq -c | awk '$1 > 1' | wc -l)
 if [[ $Ilab > 0 ]]; then echo "Pedigree file specifies the same individual label over multiple generations. This is incompatable with AFLAP so will terminate." 
 awk '{print $1, $2}' $Ped | sort | awk '{print $1}' | sort | uniq -c | awk '$1 > 1'
@@ -150,7 +150,7 @@ for g in `cat AFLAP_tmp/01/F0.txt`
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
-	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ParentalCounts/$g.jf${mer} <(zcat $Reads)
+	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ParentalCounts/$g.jf${mer} <(zcat $Reads) &&
 	fi
   done
 echo -e "\nParental K-mer counting complete!\nOn to the progeny!\n"
@@ -171,7 +171,7 @@ for g in `cat AFLAP_tmp/01/Prog.txt`
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
-	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ProgCounts/$g.jf${mer} <(zcat $Reads)
+	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ProgCounts/$g.jf${mer} <(zcat $Reads) &&
 	fi
   done
 echo -e "\nk-mer counting done!"
