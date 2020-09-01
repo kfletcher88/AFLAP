@@ -151,6 +151,10 @@ for g in `cat AFLAP_tmp/01/F0.txt`
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
 	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ParentalCounts/$g.jf${mer} <(zcat $Reads) &&
+#Check successful, exit if not.
+		if [[ ! -f AFLAP_Intermediate/ParentalCounts/$g.jf${mer} ]]; then
+		echo -e "JELLYFISH for $g did not complete. Is the file gzipped? Exiting" ; exit 1
+		fi
 	fi
   done
 echo -e "\nParental K-mer counting complete!\nOn to the progeny!\n"
@@ -172,11 +176,10 @@ for g in `cat AFLAP_tmp/01/Prog.txt`
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
 	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ProgCounts/$g.jf${mer} <(zcat $Reads) &&
+		if [[ ! -f AFLAP_Intermediate/ProgCounts/$g.jf${mer} ]]; then
+		echo -e "JELLYFISH for $g did not complete. Is the file gzipped? Exiting" ; exit 1
+		fi
 	fi
   done
 echo -e "\nk-mer counting done!"
 exit
-#for g in `seq 1 1 $Pcou` ; do echo $g ; done
-#Were user specified boundaries provided:
-
-
