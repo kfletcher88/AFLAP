@@ -51,19 +51,18 @@ do
 	fi
 	for h in `awk -v var="$g" '$4 == var || $5 == var {print $1}' $Ped | sort -u`
 	do
-		if [[ -e AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt ]]
+		if [[ -e AFLAP_Intermediate/ProgCounts/$h.jf${mer} ]]
 		then
-			echo -e "Genotype for ${h}, $g markers detected, not correct delete AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt and rerun"
-		else
-			if [[ -e AFLAP_Intermediate/ProgCounts/$h.jf${mer} ]]
-			then
-				jellyfish query -s AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_Intermediate/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
-#Need a low cov and high cov option
-				awk '{if($2 > 1) print 1; else print 0}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
+			if [[ -e AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt && -e AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt ]]; then
+			echo -e "Genotype of $g markers for $h previously calulated, will use these"
 			else
-				echo -e "No hash for $h detected. Please rerun 01_JELLYFISH.sh"
-				exit 1
+			jellyfish query -s AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_Intermediate/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
+#Need a low cov and high cov option
+			awk '{if($2 > 1) print 1; else print 0}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
 			fi
+		else
+			echo -e "No hash for $h detected. Please rerun 01_JELLYFISH.sh"
+			exit 1
 		fi
 	done
 	echo -e "GT calling for $g derived markers complete"
