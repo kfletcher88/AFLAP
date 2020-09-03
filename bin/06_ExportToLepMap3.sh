@@ -79,7 +79,7 @@ do
 			| awk -f $DIR/Transpose.awk -) \
 			<(paste \
 			<(awk -v OFS='\t' '{print $1, $2}'  AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv) \
-			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt | awk -v OFS='\t' '{print 1,0,$0}' | sed 's/$/\t/' | sed 's/1\t/0 1 0 0 0 0 0 0 0 0|\t/g' | 
+			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv | awk -v OFS='\t' '{print 1,0,$0}' | sed 's/$/\t/' | sed 's/1\t/0 1 0 0 0 0 0 0 0 0|\t/g' | 
 			sed 's/0\t/1 0 0 0 0 0 0 0 0 0|\t/g' | sed 's/|//g' | sed 's/\t$//')\
 			)> AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv
 		elif (( $Z == 5 && $F == 1 ))
@@ -91,7 +91,7 @@ do
 			| awk -f $DIR/Transpose.awk -) \
 			<(paste \
 			<(awk -v OFS='\t' '{print $1, $2}'  AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv) \
-			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt | awk -v OFS='\t' '{print 0,1,$0}' | sed 's/$/\t/' | sed 's/1\t/0 1 0 0 0 0 0 0 0 0|\t/g' | 
+			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv | awk -v OFS='\t' '{print 0,1,$0}' | sed 's/$/\t/' | sed 's/1\t/0 1 0 0 0 0 0 0 0 0|\t/g' | 
 			sed 's/0\t/1 0 0 0 0 0 0 0 0 0|\t/g' | sed 's/|//g' | sed 's/\t$//')\
 			)> AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv
 		elif (( $Z == 4 && $F == 2 ))
@@ -103,7 +103,7 @@ do
 			| awk -f $DIR/Transpose.awk -) \
 			<(paste \
 			<(awk -v OFS='\t' '{print $1, $2}'  AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv) \
-			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt | awk -v OFS='\t' '{print 1,0,2,2,$0}' | sed 's/$/\t/' | sed 's/1\t/0 0 0 0 1 0 0 0 0 0|\t/g' | 
+			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv | awk -v OFS='\t' '{print 1,0,2,2,$0}' | sed 's/$/\t/' | sed 's/1\t/0 0 0 0 1 0 0 0 0 0|\t/g' | 
 			sed 's/0\t/1 0 0 0 0 0 0 0 0 0|\t/g' | sed 's/2\t/0 1 0 0 0 0 0 0 0 0|\t/g' | sed 's/|//g' | sed 's/\t$//')\
 			)> AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv
 		elif (( $Z == 5 && $F == 2 ))
@@ -115,7 +115,7 @@ do
 			| awk -f $DIR/Transpose.awk -) \
 			<(paste \
 			<(awk -v OFS='\t' '{print $1, $2}'  AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv) \
-			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt | awk -v OFS='\t' '{print 0,1,2,2,$0}' | sed 's/$/\t/' | sed 's/1\t/0 0 0 0 1 0 0 0 0 0|\t/g' | 
+			<(cut -f 3- AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv | awk -v OFS='\t' '{print 0,1,2,2,$0}' | sed 's/$/\t/' | sed 's/1\t/0 0 0 0 1 0 0 0 0 0|\t/g' | 
 			sed 's/0\t/1 0 0 0 0 0 0 0 0 0|\t/g' | sed 's/2\t/0 1 0 0 0 0 0 0 0 0|\t/g' | sed 's/|//g' | sed 's/\t$//')\
 			)> AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv
 		else
