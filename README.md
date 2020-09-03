@@ -81,4 +81,8 @@ A: No, just provide a Pedigree file without those individuals. The genotype tabl
 
 
 Q: I have added sequence to an individual and thus added lines to the pedigree file, will AFLAP detect this?\
-A: No, though I might add something in the future. In the meantime, you can use the supplementary call `AFLAP.sh remove` to remove intermediate files for specific individuals. Rerunning AFLAP will then automatically recalculate those intermediate files. 
+A: No, though I might add something in the future. In the meantime, you can supply `-r` to `AFLAP.sh` to remove intermediate files for specific progeny individuals. Rerunning AFLAP will then automatically recalculate those intermediate files. E.G:
+```
+AFLAP.sh -r ProgenyInd1
+AFLAP.sh -P Pedigree.txt -m 31 -t 8
+``` 
