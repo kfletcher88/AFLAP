@@ -6,8 +6,8 @@ Options
         -h show this help message
         -P Pedigree file, required. See AFLAP README for more information.
         -m K-mer size. Optional. Default [31]
-        -t Threads for JELLYFISH counting. Optional. Default [4]"
-	-r Individual to remove. All other options will be ignored.
+        -t Threads for JELLYFISH counting. Optional. Default [4]
+	-r Individual to remove. All other options will be ignored."
 
 while getopts ':hP:t:m:r:' option; do
         case "$option" in
@@ -44,10 +44,11 @@ echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
 $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
+exit
 else
 echo -e "Removing intermediate progeny files generated for $rem"
 find AFLAP_Intermediate/ -name "${rem}*" -exec rm {} +
 find AFLAP_tmp/ -name "${rem}*" -exec rm {} +
-fi
 exit
+fi
 #Add additional scripts for running LepMap3
