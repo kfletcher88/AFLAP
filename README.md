@@ -43,7 +43,7 @@ An example pedigree is available in:
 
 It looks like this:
 ```
-#label, F, Read1, Read2, OptionalField1, OptionalField2
+#label, F, Read1, OptionalField1, OptionalField2
 Col	0	ReadsEBI/SRR5882797_1.fastq.gz	32	105
 Col	0	ReadsEBI/SRR5882797_2.fastq.gz	32	105
 Ler	0	ReadsEBI/SRR3166543_1.fastq.gz	40	177
@@ -54,7 +54,19 @@ ERR1432492	2	ReadsEBI/ERR1432492_1.fastq.gz	Col	Ler
 ERR1432492	2	ReadsEBI/ERR1432492_2.fastq.gz	Col	Ler
 ```
 
-Currently AFLAP is launched using the shell script `runAFLAP.sh` which accepts multiple options. 
+Currently AFLAP is launched using the shell script `AFLAP.sh` which accepts multiple options. 
+
+```
+$ ./AFLAP.sh -h
+AFLAP.sh; [-h] [-P] [-t] [-m] -- A script to run all stages of AFLAP.
+
+Options
+        -h show this help message
+        -P Pedigree file, required. See AFLAP README for more information.
+        -m K-mer size. Optional. Default [31]
+        -t Threads for JELLYFISH counting. Optional. Default [4]
+        -r Individual to remove. All other options will be ignored.
+```
 
 ## Intermediate Results
 
