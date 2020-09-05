@@ -9,7 +9,7 @@ Options
         -t Threads for JELLYFISH counting. Optional. Default [4]
 	-r Individual to remove. All other options will be ignored."
 
-while getopts ':hP:t:m:r:' option; do
+while getopts ':khP:t:m:r:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -21,6 +21,8 @@ while getopts ':hP:t:m:r:' option; do
                 m)  mer=$OPTARG
                         ;;
 		r)  rem=$OPTARG
+			;;
+		k)  kin=1
 			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
@@ -42,6 +44,7 @@ echo -e "\n\e[31mBeginning Step 4/6\e[0m" &&
 $DIR/bin/04_Genotyping.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
 $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer &&
+if (( $kin == 1 )); then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
 exit
