@@ -2,9 +2,14 @@
 
 ## About
 
-The Assembly Free Linkage Abalysis Pipeline (AFLAP) was designed to build genetic maps using k-mers. This pipeline takes raw reads as an input, compares the composition (Jellyfish hashes) of the two parenrs and identifies uniquely segregating k-mers. It has been tested on Arabidopsis thaliana and Bremia lactucae producing linkage groups coherent with independently generated genome assemblies. AFLAP may be applied to any organism for which a mapping population is available. We note, that using low coverage sequence is less than ideal for an assembly free approach as a large amount of noise is introduced due to missing data.
+The Assembly Free Linkage Analysis Pipeline (AFLAP) was designed to build genetic maps using k-mers. This pipeline takes raw reads as an input, compares the composition (Jellyfish hashes) of the two parents and identifies uniquely segregating k-mers. It has been tested on Arabidopsis thaliana and Bremia lactucae producing linkage groups coherent with independently generated genome assemblies. AFLAP may be applied to any organism for which a mapping population is available. We note, that using low coverage sequence is less than ideal for an assembly free approach as a large amount of noise is introduced due to missing data.
 
 ## Install
+
+To install AFLAP, please clone this GitHub repo. 
+```
+git clone git@github.com:kfletcher88/AFLAP.git`
+```
 
 ## Prerequisites
 
@@ -16,12 +21,14 @@ R\
 ggplot2\
 ggrepel\
 All must be present in the PATH, otherwise AFLAP will not initiate successfully.
+The bin directory of LepMap3 should be foung in `./ThirdParty/LepMap3`. This can be achieved by running `./bin/LepMap3Installer.sh` or by placing a symbolic link to an already installed copy. Additional scripts have been provided to run LepMap3 from a different location, see option `-d` of `./bin/LepMap3SeperateChromosomes.pl` and `./bin/LepMap3OrderMarkers.pl`
 
 R packages can be check by running:
 ```
 Rscript bin/PackageCheck.R
 ```
 on your system.
+
 
 ## Custom pedigree file.
 The pedigree file outlines the pedigree of the cross to be analyzed and the location of the reads which are going to be analyzed. This is done by three mandatory tab delimited fields, two optional.\
