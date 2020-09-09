@@ -20,8 +20,8 @@ LepMap3\
 R\
 ggplot2\
 ggrepel\
-All must be present in the PATH, otherwise AFLAP will not initiate successfully.
-The bin directory of LepMap3 should be foung in `./ThirdParty/LepMap3`. This can be achieved by running `./bin/LepMap3Installer.sh` or by placing a symbolic link to an already installed copy. Additional scripts have been provided to run LepMap3 from a different location, see option `-d` of `./bin/LepMap3SeperateChromosomes.pl` and `./bin/LepMap3OrderMarkers.pl`
+All must be present in the PATH, otherwise AFLAP will not initiate successfully.\
+The bin directory of LepMap3 should be found in `./ThirdParty/LepMap3`. This can be achieved by running `./bin/LepMap3Installer.sh` or by placing a symbolic link to an already installed copy. Additional scripts have been provided to run LepMap3 from a different location, see option `-d` of `./bin/LepMap3SeperateChromosomes.pl` and `./bin/LepMap3OrderMarkers.pl`
 
 R packages can be check by running:
 ```
