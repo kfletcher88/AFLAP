@@ -42,21 +42,21 @@ do
 	P0=$(cat AFLAP_tmp/03/${g}_CrossedTo.txt | tr '\n' '_' | sed 's/_$//')
 	Lo=$(awk -v var="$g" '$1 == var {print $2}' AFLAP_tmp/02/Boundaries.txt)
 	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
-	if [[ -e AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
+	if [[ -e AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
 	then 
-		Mcou=$(grep -c '^>' AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
-		echo -e "$Mcou markers identified in AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa. These will be surveyed against progeny"
+		Mcou=$(grep -c '^>' AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
+		echo -e "$Mcou markers identified in AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa. These will be surveyed against progeny"
 	else
 		echo -e "Can't automatically locate marker file. Please try rerunning intermediate scripts."
 	fi
 	for h in `awk -v var="$g" '$4 == var || $5 == var {print $1}' $Ped | sort -u`
 	do
-		if [[ -e AFLAP_Intermediate/ProgCounts/$h.jf${mer} ]]
+		if [[ -e AFLAP_tmp/04/ProgCounts/$h.jf${mer} ]]
 		then
 			if [[ -e AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt && -e AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt ]]; then
 			echo -e "Genotype of $g markers for $h previously calulated, will use these"
 			else
-			jellyfish query -s AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_Intermediate/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
+			jellyfish query -s AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_tmp/04/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
 #Need a low cov and high cov option
 			awk '{if($2 > 1) print 1; else print 0}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
 			fi
@@ -67,7 +67,7 @@ do
 	done
 	echo -e "GT calling for $g derived markers complete"
 	awk '{print $1}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt | paste - AFLAP_tmp/04/Call/*_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.tsv
-	cat AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/>//' | sort -k2,2 | join -1 2 - <(sort -k1,1 AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.tsv) | tr ' ' '\t' > AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv
+	cat AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/>//' | sort -k2,2 | join -1 2 - <(sort -k1,1 AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.tsv) | tr ' ' '\t' > AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv
 	rm AFLAP_tmp/04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.tsv
 done
 exit
