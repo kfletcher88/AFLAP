@@ -54,7 +54,6 @@ if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected"; else echo "jellyfish not d
 
 #Make a tmp directory
 mkdir -p AFLAP_tmp/01
-mkdir -p AFLAP_Intermediate
 
 #Pedigree file check
 #Check labels
@@ -136,23 +135,23 @@ echo -e "Moving onto k-mer counting\n"
 fi
 #K-mer counting.
 #Parents.
-mkdir -p AFLAP_Intermediate/ParentalCounts
+mkdir -p AFLAP_tmp/01/ParentalCounts
 PLA=$(cat AFLAP_tmp/01/F0.txt | wc -l)
 echo -e "Begining k-mer counting for $PLA parents"
 for g in `cat AFLAP_tmp/01/F0.txt`
   do
 #Check if has has already been created
-	if [[ -e AFLAP_Intermediate/ParentalCounts/$g.jf${mer} ]]
+	if [[ -e AFLAP_tmp/01/ParentalCounts/$g.jf${mer} ]]
 	then
 #If so, skip.
-	echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_Intermediate/ParentalCounts/$g.fj${mer}, or run from clean directory"
+	echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_tmp/01/ParentalCounts/$g.fj${mer}, or run from clean directory"
 	else
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
-	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ParentalCounts/$g.jf${mer} <(zcat $Reads) &&
+	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_tmp/01/ParentalCounts/$g.jf${mer} <(zcat $Reads) &&
 #Check successful, exit if not.
-		if [[ ! -f AFLAP_Intermediate/ParentalCounts/$g.jf${mer} ]]; then
+		if [[ ! -f AFLAP_tmp/01/ParentalCounts/$g.jf${mer} ]]; then
 		echo -e "JELLYFISH for $g did not complete. Is the file gzipped? Exiting" ; exit 1
 		fi
 	fi
@@ -160,23 +159,23 @@ for g in `cat AFLAP_tmp/01/F0.txt`
 echo -e "\nParental K-mer counting complete!\nOn to the progeny!\n"
 #Progeny.
 #Would be good to parallelize.
-mkdir -p AFLAP_Intermediate/ProgCounts
+mkdir -p AFLAP_tmp/01/ProgCounts
 awk '$2 != 0 {print $1}' $Ped | sort -u > AFLAP_tmp/01/Prog.txt
 ProgCou=$(cat AFLAP_tmp/01/Prog.txt | wc -l)
 echo -e "Begining k-mer counting for $ProgCou progeny"
 for g in `cat AFLAP_tmp/01/Prog.txt`
   do
 #Check if has has already been created
-        if [[ -e AFLAP_Intermediate/ProgCounts/$g.jf${mer} ]]
+        if [[ -e AFLAP_tmp/01/ProgCounts/$g.jf${mer} ]]
         then
 #If so, skip.
-        echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_Intermediate/ProgCounts/$g.fj${mer}, or run from clean directory"
+        echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_tmp/01/ProgCounts/$g.fj${mer}, or run from clean directory"
         else
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
-	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_Intermediate/ProgCounts/$g.jf${mer} <(zcat $Reads) &&
-		if [[ ! -f AFLAP_Intermediate/ProgCounts/$g.jf${mer} ]]; then
+	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_tmp/01/ProgCounts/$g.jf${mer} <(zcat $Reads) &&
+		if [[ ! -f AFLAP_tmp/01/ProgCounts/$g.jf${mer} ]]; then
 		echo -e "JELLYFISH for $g did not complete. Is the file gzipped? Exiting" ; exit 1
 		fi
 	fi
