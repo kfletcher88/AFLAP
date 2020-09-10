@@ -8,7 +8,7 @@ The Assembly Free Linkage Analysis Pipeline (AFLAP) was designed to build geneti
 
 To install AFLAP, please clone this GitHub repo. 
 ```
-git clone git@github.com:kfletcher88/AFLAP.git`
+git clone git@github.com:kfletcher88/AFLAP.git
 ```
 
 ## Prerequisites
@@ -97,7 +97,7 @@ A: No, AFLAP will be able to use old results for previously generated data and g
 
 
 Q: I want to exclude individuals, should I delete intermediate files?\
-A: No, just provide a Pedigree file without those individuals. The genotype table is directed with the Pedigree file, so will only build a table for isolates indicated with in.
+A: No, just provide a Pedigree file without those individuals. The genotype table is directed with the Pedigree file, so will only build a table for progeny indicated with in.
 
 
 Q: I have added sequence to an individual and thus added lines to the pedigree file, will AFLAP detect this?\
