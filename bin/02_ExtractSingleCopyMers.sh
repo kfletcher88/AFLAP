@@ -44,19 +44,19 @@ if [[ $JF =~ ^jellyfish ]]; then echo -e "\n$JF detected" >&2 ; else echo -e "\n
 
 #Make new tmp for second script.
 mkdir -p AFLAP_tmp/02
-mkdir -p AFLAP_Intermediate/ParentalHisto
+mkdir -p AFLAP_tmp/02/ParentalHisto
 echo "#Boundaries to follow" > AFLAP_tmp/02/Boundaries.txt
 #Obtain Histograms.
 echo -e "\nGenerating histograms for F0 to undergo linkage analysis."
 for g in `cat AFLAP_tmp/01/LA.txt`
   do
-	if [[ -e AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo ]] #1
+	if [[ -e AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo ]] #1
 	then
 	#Use existing results.
-	echo -e "Histogram for $g ${mer}-mer detected. Will use those results.\nNot correct? Cancel and delete AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo, or rerun in clean directory"
+	echo -e "Histogram for $g ${mer}-mer detected. Will use those results.\nNot correct? Cancel and delete AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo, or rerun in clean directory"
 	else
 	#Generate histogram
-	jellyfish histo AFLAP_Intermediate/ParentalCounts/$g.jf${mer} > AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo
+	jellyfish histo AFLAP_tmp/02/ParentalCounts/$g.jf${mer} > AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo
 	echo -e "Histogram for $g generated"
 	fi #1
   #Check to see if Coverage boundaries provided by the user?
@@ -69,12 +69,12 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 	else
 	#Super hacky peak finding and boundary setting follows!
 	echo -e "User has not supplied boundaries for $g ${mer}-mer cut-offs. Automatic calculation underway\nNote results may not be accurate and plotted figures should be investigated.\n\tIf the F0 are under 20x coverage, reccomend run is cancelled and user defined boundaries be set"
-	Peak=$(tail -n+20 AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo | sort -nrk2,2 | head -n 1 | awk '{print $1}')
+	Peak=$(tail -n+20 AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo | sort -nrk2,2 | head -n 1 | awk '{print $1}')
 	echo "Peak found at ${Peak}x. Trying to determing if homozygous or heterozygous."
 	HomTest=$(printf %.0f $(echo $Peak*1.5 | bc -l))
-	HomPeak=$(tail -n+$HomTest AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo | sort -nrk2,2 | head -n 1 | awk '{print $1}')
+	HomPeak=$(tail -n+$HomTest AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo | sort -nrk2,2 | head -n 1 | awk '{print $1}')
 	HetTest=$(printf %.0f $(echo $Peak*0.75 | bc -l))
-	HetPeak=$(head -n $HetTest AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo | tail -n+20 | sort -nrk2,2 | head -n 1 | awk '{print $1}')
+	HetPeak=$(head -n $HetTest AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo | tail -n+20 | sort -nrk2,2 | head -n 1 | awk '{print $1}')
 	HomLo=$(printf %.0f $(echo $Peak*1.9 | bc -l))
 	HomUp=$(printf %.0f $(echo $Peak*2.1 | bc -l))
 	HetLo=$(printf %.0f $(echo $Peak*0.4 | bc -l))
@@ -141,14 +141,14 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 	fi #1
   echo "Lower boundary for $g set to $Lo, upper boundary to $Up"
   echo -e "$g\t$Lo\t$Up" >> AFLAP_tmp/02/Boundaries.txt
-  if [[ -e AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
+  if [[ -e AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
   then 
   echo -e "\n$g ${mer}-mer previously extracted between $Lo and $Up. Delete ${g}_m${mer}_L${Lo}_U${Up}.fa to rebuild." 
   else
-  jellyfish dump -U $Up -L $Lo -o AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer}
-  Kco=$(grep -c '^>'  AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa) 
+  jellyfish dump -U $Up -L $Lo -o AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/02/ParentalCounts/$g.jf${mer}
+  Kco=$(grep -c '^>'  AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa) 
   echo "$Kco ${mer}-mers extracted from $g"
-  Rscript $DIR/HistoPlot.R AFLAP_Intermediate/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
+  Rscript $DIR/HistoPlot.R AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
   fi
   done
 exit
