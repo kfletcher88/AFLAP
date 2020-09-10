@@ -61,8 +61,7 @@ exit 1
 fi
 
 #Make new tmp and Intermdiate directories:
-mkdir -p AFLAP_tmp/03
-mkdir -p AFLAP_Intermediate/ParentalMarkers
+mkdir -p AFLAP_tmp/03/ParentalMarkers
 
 #0. Dependency Check
 
@@ -84,7 +83,7 @@ do
 	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
 	echo -e "Lower boundary set to $Lo"
 	echo -e "Upper boundary set to $Up"
-		if [[ -e AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
+		if [[ -e AFLAP_tmp/03/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
 		then
 		echo -e "Redults with these boundaries detected. Good to proceed."
 		else
@@ -96,22 +95,22 @@ do
 	awk '{print $3, $4}' AFLAP_tmp/01/Crosses.txt | awk -v var="$g" '$0 ~ var {print $1"\n"$2}' | awk -v var="$g" '$1 != var' > AFLAP_tmp/03/${g}_CrossedTo.txt
 	echo -e "$g identified as crossed to:"
 	head AFLAP_tmp/03/${g}_CrossedTo.txt
-	cp AFLAP_Intermediate/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
+	cp AFLAP_tmp/03/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
 	#Copied into tmp so we can overwrite in the next stage.
 #3. Filter against opposing parents (another loop?)
 	P0=$(cat AFLAP_tmp/03/${g}_CrossedTo.txt | tr '\n' '_' | sed 's/_$//')
-	if [[ -e AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
+	if [[ -e AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
 		then
-		echo -e "Previously calculated markers detected. Want to calculate new markers, please deleted:\n./AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa\nSummary of markers available:\n./$g.MarkerReport.txt"
+		echo -e "Previously calculated markers detected. Want to calculate new markers, please deleted:\n./AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa\nSummary of markers available:\n./$g.MarkerReport.txt"
 		else
 	for f in `cat AFLAP_tmp/03/${g}_CrossedTo.txt`
 	do
 	# Identify opposing parental hashes.
-		if  [[ -e AFLAP_Intermediate/ParentalCounts/$f.jf${mer} ]]
+		if  [[ -e AFLAP_tmp/03/ParentalCounts/$f.jf${mer} ]]
 		then
 		echo "Intersecting $g with $f"
 	# Filter and overwrite input.
-		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_Intermediate/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i,"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt
+		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i,"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt
 		mv AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
 		Mlcou=$(grep -c '^>' AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa)
 		echo "${Mlcou} $g ${mer}-mers remain after filtering against $f"
@@ -125,23 +124,23 @@ do
 #5. Extract
 	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 >= 61 {print $1"_"$2"\n"substr($4,10,31)}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa
 #6. Refilter against self for mers between boundaries.
-	jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa AFLAP_Intermediate/ParentalCounts/$g.jf${mer} | awk -v Low="$Lo" -v Up="$Up" '$2 >= Low && $2 <= Up {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
+	jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa AFLAP_tmp/03/ParentalCounts/$g.jf${mer} | awk -v Low="$Lo" -v Up="$Up" '$2 >= Low && $2 <= Up {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
 #7. Refilter against other parents (another loop).
 	for f in `cat AFLAP_tmp/03/${g}_CrossedTo.txt`
 	do
-		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa AFLAP_Intermediate/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa
+		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa AFLAP_tmp/03/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa
 		mv AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
 	done
 #8. Export final marker set with ABySS conserved headers.
 	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa | paste - - | cut -f 2 | tr 'ATCG' 'TAGC' | rev | paste <(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa | paste - - | cut -f 1) - | tr '\t' '\n' | cat - AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2RC.fa
-	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa | paste - - | sort -k2,2 | join -1 2 -2 2 -o "2.1,0" - <(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2RC.fa | paste - - | sort -k2,2) | tr ' ' '\n' > AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa
+	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa | paste - - | sort -k2,2 | join -1 2 -2 2 -o "2.1,0" - <(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2RC.fa | paste - - | sort -k2,2) | tr ' ' '\n' > AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa
 #9. Export stats.
 	FragCou=$(grep -c '^>' AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa)
 	Cou61=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 == 61' | wc -l)
 	Cou62=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 > 61' | wc -l)
-	MarCou=$(grep -c '^>' AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
-	Mar61=$(cat AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk '$2 == 61' | wc -l)
-	Mar62=$(cat AFLAP_Intermediate/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk '$2 > 61' | wc -l)
+	MarCou=$(grep -c '^>' AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
+	Mar61=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk '$2 == 61' | wc -l)
+	Mar62=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk '$2 > 61' | wc -l)
 	echo -e "Report for $g
 Number of $mer-mers input into assembly: $Mlcou
 Number of fragments assembled: $FragCou
