@@ -30,7 +30,7 @@ exit 1
 fi
 
 mkdir -p AFLAP_tmp/05/FilteredCall
-mkdir -p AFLAP_Intermediate/SegregationInformation
+mkdir -p AFLAP_tmp/05/SegregationInformation
 mkdir -p AFLAP_Results
 #BASH math
 kk=$(printf %.0f $(echo $mer+$mer-1 | bc -l))
