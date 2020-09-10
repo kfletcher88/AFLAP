@@ -75,11 +75,11 @@ do
 #Use Pedigree table to see if M/F map built. Extract information. Build marker fasta.
 	Z=$(awk -v var=$g '$4 == var || $5 == var {if ($4 == var) print 4; else if ($5 == var) print 5}' $Ped | head -n 1)
 	if (( Z == 4 )); then
-		cat AFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}.LG*.txt | awk -v OFS='\t' '$2 ~ /LG/ {lg = $4; next} $1 !~ /\#/ {print lg, $2, $1}' | \
-		join -1 3 - <(cut -f1,2 AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv | awk '(NR>6){print ++i, $0}' | sort -k1,1) | awk -v OFS='\t' '{print $2, $3, $4}'  > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD$LOD.txt
+		cat AFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}.LG*.txt | awk -v OFS='\t' '$2 ~ /LG/ {lg = $4; next} $1 !~ /\#/ {print lg, $2, $1}' | sort -k3,3 | \
+		join -1 3 - <(cut -f1,2 AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv | awk '(NR>6){print ++i, $0}' | sort -k1,1) | awk -v OFS='\t' '{print $4, $2, $3, $5}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD$LOD.txt
 	elif (( Z == 5 )); then
-		cat AFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}.LG*.txt | awk -v OFS='\t' '$2 ~ /LG/ {lg = $4; next} $1 !~ /\#/ {print lg, $3, $1}' | \
-		join -1 3 - <(cut -f1,2 AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv | awk '(NR>6){print ++i, $0}' | sort -k1,1) | awk -v OFS='\t' '{print $2, $3, $4}'  > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD$LOD.txt
+		cat AFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}.LG*.txt | awk -v OFS='\t' '$2 ~ /LG/ {lg = $4; next} $1 !~ /\#/ {print lg, $3, $1}' | sort -k3,3 | \
+		join -1 3 - <(cut -f1,2 AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ForLepMap3.tsv | awk '(NR>6){print ++i, $0}' | sort -k1,1) | awk -v OFS='\t' '{print $4, $2, $3, $5}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD$LOD.txt
 	fi
 echo -e "Genetic map for $g:\n\tAFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD$LOD.txt\nLepMap3 output:\n\tAFLAP_Results/LOD${LOD}\nLepMap3 Map file:\n\tAFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}.txt\n\n"
 echo -e "Appending to log file"
