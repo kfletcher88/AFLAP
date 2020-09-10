@@ -9,7 +9,7 @@ Options
         -t Threads for JELLYFISH counting. Optional. Default [4]
 	-r Individual to remove. All other options will be ignored."
 
-while getopts ':khP:t:m:r:' option; do
+while getopts ':khP:t:m:r:L:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -23,6 +23,8 @@ while getopts ':khP:t:m:r:' option; do
 		r)  rem=$OPTARG
 			;;
 		k)  kin=1
+			;;
+		L)  LOD=$OPTARG
 			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
@@ -47,6 +49,10 @@ $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer &&
 if (( $kin == 1 )); then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
+if [[ -z $LOD ]]; then echo -e "No LOD cutoffs provided, so AFLAP will not run LepMap3. LOD cutoffs can be provided with the -L flag" ;
+else
+for g in `echo $LOD | tr ',' '\n'` ; do $DIR/bin/07_LepMap3.sh -P $Ped -m $mer -T $thread -L $g ; done 
+fi
 exit
 else
 echo -e "Removing intermediate progeny files generated for $rem"
