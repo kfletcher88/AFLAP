@@ -1,17 +1,19 @@
 #!/bin/bash -l
-#Usage Statement
-
+###########################################################
+#	Shell script to be ran as part of the AFLAP pipeline.
+#	This script will sanity check the pedigree file then run JELLYFISH on parents and progeny specified in the pedigree file.
+#	The output will be stored in AFLAP_tmp.
+#	The script will detect previous results and used them when able.
+###########################################################
 Name=$(basename $0)
 usage="${Name}; [-h] [-P] [-t] [-m] -- A script to obtain JELLYFISH hashes to be used when running AFLAP.
-
 Options
 	-h show this help message
 	-P Pedigree file, required. See AFLAP README for more information.
 	-m K-mer size. Optional. Default [31]
 	-t Threads for JELLYFISH counting. Optional. Default [4]
-
 Temporary files will be output to AFLAP_tmp/01."
-
+#Option block
 while getopts ':hP:t:m:' option; do
         case "$option" in
                 h)  echo "$usage"
@@ -24,12 +26,11 @@ while getopts ':hP:t:m:' option; do
 		m)  mer=$OPTARG
 			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
-                    echo "$usage"
+		    echo "$usage"
                     exit 1
                          ;;
         esac
 done
-
 #Check arguments.
 if [[ -z $Ped ]]; then
         echo -e "ERROR: Pedigree file not provided\n"
@@ -41,17 +42,14 @@ if [[ -z $thread ]]; then
 echo "Threads not specified, will proceed with default [4]"
 thread=4
 fi
-
 if [[ -z $mer ]]; then
 echo "mer size not specified, will proceed with default [31]"
 mer=31
 fi
-
 #0. Dependency Check
 #JELLYFISH
 JF=$(jellyfish --version)
 if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected"; else echo "jellyfish not detected, please modify your PATH" ; exit 1 ; fi
-
 #Make a tmp directory
 mkdir -p AFLAP_tmp/01
 
