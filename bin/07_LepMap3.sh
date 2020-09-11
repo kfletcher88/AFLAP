@@ -83,7 +83,7 @@ do
 	fi
 echo -e "Genetic map for $g:\n\tAFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD$LOD.txt\nLepMap3 output:\n\tAFLAP_Results/LOD${LOD}\nLepMap3 Map file:\n\tAFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}.txt\n\n"
 echo -e "Appending to log file"
-if [[ ! -f AFLAP_RUN.LOG ]]; then echo -e "MappedParent\tOtherParents\tmerLen\tUpperBoundary\tLowerBoundary\tMinLOD\tLepMap3Outputs\tLinkageGroupCount" >> AFLAP_RUN.LOG ; fi
+if [[ ! -f AFLAP_RUN.LOG ]]; then echo -e "Date\tMappedParent\tOtherParents\tmerLen\tUpperBoundary\tLowerBoundary\tMinLOD\tLepMap3Outputs\tLinkageGroupCount" >> AFLAP_RUN.LOG ; fi
 paste <(date) <(echo -e "$g\t$P0\t$mer\t$Lo\t$Up\t$LOD\tAFLAP_Results/LOD${LOD}/${g}_m${mer}_L${Lo}_U${Up}_${P0}.LOD${LOD}*\t$LGcou") >> AFLAP_RUN.LOG
 done
 echo -e "AFLAP Finished!!!"
