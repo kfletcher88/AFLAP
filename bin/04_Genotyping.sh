@@ -44,7 +44,7 @@ do
 	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
 	if [[ -e AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
 	then 
-		Mcou=$(grep -c '^>' AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
+		Mcou=$(grep -c '^>' AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
 		echo -e "$Mcou markers identified in AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa. These will be surveyed against progeny"
 	else
 		echo -e "Can't automatically locate marker file. Please try rerunning intermediate scripts."
@@ -56,7 +56,7 @@ do
 			if [[ -e AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt && -e AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt ]]; then
 			echo -e "Genotype of $g markers for $h previously calulated, will use these"
 			else
-			jellyfish query -s AFLAP_tmp/04/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_tmp/04/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
+			jellyfish query -s AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_tmp/01/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
 #Need a low cov and high cov option
 			awk '{if($2 > 1) print 1; else print 0}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
 			fi
