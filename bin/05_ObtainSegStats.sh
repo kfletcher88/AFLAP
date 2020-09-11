@@ -1,10 +1,15 @@
 #!/bin/bash -l
-#Obtain Segregation Histograms
-
-#!/bin/bash -l
-
-#Usage Statement
-
+#################################################
+#       A shell script to obtain segregation statistics and exclude progeny which have low coverage
+#################################################
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-m] -- A script to plot marker distributions in progeny (AFLAP 5/6).
+Options
+        -h show this help message
+        -P Pedigree file, required. See AFLAP README for more information.
+        -m K-mer size. Optional. Default [31]
+Temporary files will be output to AFLAP_tmp/05."
+#Option block
 while getopts ':hP:m:' option; do
         case "$option" in
                 h)  echo "$usage"

@@ -1,7 +1,16 @@
 #!/bin/bash -l
-
-#Usage Statement
-
+#################################################
+#	A shell script to call genotypes of progeny using makrers derived from a parent and progeny JELLYFISH hashes
+#	For optimal calls, a k-mer should be observed twice.
+#################################################
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-m] -- A script to genotype progeny (AFLAP 4/6).
+Options
+	-h show this help message
+	-P Pedigree file, required. See AFLAP README for more information.
+	-m K-mer size. Optional. Default [31]
+Temporary files will be output to AFLAP_tmp/04."
+#Option block
 while getopts ':hP:m:' option; do
         case "$option" in
                 h)  echo "$usage"

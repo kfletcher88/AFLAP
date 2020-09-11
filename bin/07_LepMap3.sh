@@ -1,5 +1,17 @@
 #!/bin/bash -l
-
+#################################################
+#       A shell script to run LepMap3 and produce a genetic map which can be aligned to a genome assembly.
+#	LepMap3 shouyld be installed in ./ThirdParty/LepMap3
+#################################################
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-m] -- A script to genotype progeny (AFLAP 7/6).
+Options
+        -h show this help message
+        -P Pedigree file, required. See AFLAP README for more information.
+        -m K-mer size. Optional. Default [31].
+	-T Threads. Default [4].
+	-L Minimum LOD score"
+#Option block
 while getopts ':hP:m:L:T:' option; do
         case "$option" in
                 h)  echo "$usage"
@@ -20,8 +32,11 @@ while getopts ':hP:m:L:T:' option; do
         esac
 done
 
-#Check if options aren't set.
-
+if [[ -z $Ped || -z $LOD || -z $mer ]]; then echo "One or more options not set. Are you trying to run this outside of the AFLAP control script?" ; echo "$usage" ; exit 1 ; fi
+if [[ -z $thread ]]; then
+echo "Threads not specified, will proceed with default [4]"
+thread=4
+fi
 if [[ -e AFLAP_tmp/01/LA.txt && -e AFLAP_tmp/02/Boundaries.txt ]]
 then
 echo -e "\nIntermediate files detected"
@@ -29,16 +44,13 @@ else
 echo -e "\n Could not find output of previous scripts. Please rerun full pipeline."
 exit 1
 fi
-
 DIR=$(dirname $0)
 mkdir -p AFLAP_Results/LOD$LOD
-
 if [[ ! -e $DIR/../ThirdParty/LepMap3/bin/SeparateChromosomes2.class ]]
 then
 echo -e "\nLepMap3 modules not detected in $DIR/../ThirdParty/LepMap3/bin/\n\nPlease run $DIR/LepMap3Installer.sh to install LepMap3 here.\n\tAlternatively, run LepMap3 by providing the installation directory with option -d to perl scripts: \n\t\t$DIR/LepMap3SeperateChromosomes.pl and \n\t\t$DIR/LepMap3OrderMarkers.pl\nExiting"
 exit 1
 fi
-
 #Set variables to obtain correct genotype table.
 for g in `cat AFLAP_tmp/01/LA.txt`
 do

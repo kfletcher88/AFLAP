@@ -1,5 +1,16 @@
 #!/bin/bash -l
-#Obtain Kinship estimates. Further filter manually
+#################################################
+#	Optional script to plot a heatmap, approximating kinship
+#	The script will not exclude isolates from downstram analysis, but may guide the user in which progeny, if any to remove
+#################################################
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-m] -- A script to genotype progeny (AFLAP 5b/6).
+Options
+        -h show this help message
+        -P Pedigree file, required. See AFLAP README for more information.
+        -m K-mer size. Optional. Default [31]
+Temporary files will be output to AFLAP_tmp/KmerKin."
+#Option block
 while getopts 'P:m:' option; do
         case "$option" in
                 P)  Ped=$OPTARG
@@ -25,8 +36,7 @@ DIR=$(dirname $0)
 
 for g in `cat AFLAP_tmp/01/LA.txt`
 do
-#1 Check for Genotype table
-#Again need a low vs high coverage flag
+#Check for Genotype table
         P0=$(cat AFLAP_tmp/03/${g}_CrossedTo.txt | tr '\n' '_' | sed 's/_$//')
         Lo=$(awk -v var="$g" '$1 == var {print $2}' AFLAP_tmp/02/Boundaries.txt)
         Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
