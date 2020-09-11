@@ -83,7 +83,7 @@ do
 	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
 	echo -e "Lower boundary set to $Lo"
 	echo -e "Upper boundary set to $Up"
-		if [[ -e AFLAP_tmp/03/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
+		if [[ -e AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa ]]
 		then
 		echo -e "Redults with these boundaries detected. Good to proceed."
 		else
@@ -95,8 +95,8 @@ do
 	awk '{print $3, $4}' AFLAP_tmp/01/Crosses.txt | awk -v var="$g" '$0 ~ var {print $1"\n"$2}' | awk -v var="$g" '$1 != var' > AFLAP_tmp/03/${g}_CrossedTo.txt
 	echo -e "$g identified as crossed to:"
 	head AFLAP_tmp/03/${g}_CrossedTo.txt
-	cp AFLAP_tmp/03/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
-	#Copied into tmp so we can overwrite in the next stage.
+	cp AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
+	#Copied into 03 so we can overwrite in the next stage.
 #3. Filter against opposing parents (another loop?)
 	P0=$(cat AFLAP_tmp/03/${g}_CrossedTo.txt | tr '\n' '_' | sed 's/_$//')
 	if [[ -e AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
