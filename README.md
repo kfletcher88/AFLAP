@@ -81,9 +81,9 @@ All temporary files are stored in AFLAP_tmp. This can be pretty sizeable dependi
 
 ## Final Results
 
-There are multiple points which AFLAP can be stopped:\
-1. I just want a genotype table to export to my favorite mapping software. This is generated in step 4, so users can terminate the software here if desired. The genotype table will be saved in AFLAP_Results, with the suffix GT.tsv.\
-2. I want a LepMap3 compatible genotype table that I will use to run LepMap3 independtly. This is generated in step 6 and is the default stopping position of AFLAP. It will be saved in AFLAP_Results, with the suffix ForLepMap3.tsv.\
+There are multiple points which AFLAP can be stopped:
+1. I just want a genotype table to export to my favorite mapping software. This is generated in step 4, so users can terminate the software here if desired. The genotype table will be saved in AFLAP_Results, with the suffix GT.tsv.
+2. I want a LepMap3 compatible genotype table that I will use to run LepMap3 independtly. This is generated in step 6 and is the default stopping position of AFLAP. It will be saved in AFLAP_Results, with the suffix ForLepMap3.tsv.
 3. I want LepMap3 results. By specifying minimal LOD scores when running `AFLAP.sh`, using `-l` AFLAP will run LepMap3, provided it is found in the ThirdParty directory. In running this AFLAP will calculate the marker order for every linkage group which contains more than 1% of the total number of markers. In addtion, AFLAP will process the LepMap3 results to produce a final file detailing the Marker ID, Linkage group assigned, cM position and marker sequence. This can be used to generate a marker file to map to a genome assembly very quickly. Marker sequences can be used to compare between runs. MarkerIDs can be used for comparison, provided the same AFLAP_tmp directpory is used (e.g. in case the user wants to change the progeny).\
 The LepMap3 results are located in AFLAP_Results/LOD#, depending on the minimum LOD score provided.\
 The Map and marker file is located in AFLAP_Results suffixed LOD#.txt.
