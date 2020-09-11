@@ -7,7 +7,8 @@ Options
         -P Pedigree file, required. See AFLAP README for more information.
         -m K-mer size. Optional. Default [31]
         -t Threads for JELLYFISH counting. Optional. Default [4]
-	-r Individual to remove. All other options will be ignored."
+	-r Individual to remove. All other options will be ignored.
+	-L LOD score - Will run LepMap3 with minimum LOD."
 
 while getopts ':khP:t:m:r:L:' option; do
         case "$option" in
@@ -32,6 +33,8 @@ while getopts ':khP:t:m:r:L:' option; do
                          ;;
         esac
 done
+
+if [[ -z $rem && -z $Ped ]]; then echo -e "Either pedigree file (-P), or progeny individual intermediate data to remove (-r) required" ; echo "$usage" ; exit 1 ; fi
 
 if [[ -z $rem ]]; then
 DIR=$(dirname $0)
