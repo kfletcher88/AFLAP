@@ -3,12 +3,12 @@
 #       A shell script to export the genotype table to LepMap3
 #################################################
 Name=$(basename $0)
-usage="${Name}; [-h] [-P] [-m] -- A script to genotype progeny (AFLAP 4/6).
+usage="${Name}; [-h] [-P] [-m] -- A script to genotype progeny (AFLAP 6/6).
 Options
         -h show this help message
         -P Pedigree file, required. See AFLAP README for more information.
         -m K-mer size. Optional. Default [31]
-Temporary files will be output to AFLAP_tmp/04."
+Temporary files will be output to AFLAP_tmp/06."
 #Option block
 while getopts ':hP:m:' option; do
         case "$option" in
