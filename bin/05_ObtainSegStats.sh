@@ -94,6 +94,7 @@ do
 	cd ../
 	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
 	ls FilteredCall/* | sed "s/_${g}.*//" | sed 's/.*\///' > ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt
+	cat <(cat ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt | tr '\n' '\t' | sed 's/\t$//' | awk -v OFS='\t' '{print "MarkerID", "MakerSeq", $0}') ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_$P0.GT.tsv
 #Removing means isolates can be excluded by editing the Pedigree file
 	rm FilteredCall/*
 	else
