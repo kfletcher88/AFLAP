@@ -1,7 +1,18 @@
 #!/bin/bash -l
-
-#Usage Statement
-
+#################################################
+#	A shell script to derive single copy k-mers that are unique to a parent. These are then used a markers.
+#	To reduce redundancy k-mers are assembled using ABySS.
+#	To enable the use of a consistent has size, the markers are reduced to a sequnce length equal to option m.
+#	This consistent marker length then only need to be surveyed against only one progeny hash.
+#################################################
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-m] -- A script to obtain single copy k-mers from parental JELLYFISH hashes (AFLAP 3/6).
+Options
+	-h show this help message
+	-P Pedigree file, required. See AFLAP README for more information.
+	-m K-mer size. Optional. Default [31]
+Temporary files will be output to AFLAP_tmp/03."
+#Option block
 while getopts ':hP:m:' option; do
         case "$option" in
                 h)  echo "$usage"
@@ -17,10 +28,6 @@ while getopts ':hP:m:' option; do
                          ;;
         esac
 done
-
-t=AFLAP_tmp
-mkdir -p $t
-
 #Check arguments.
 if [[ -z $Ped ]]; then
         echo -e "ERROR: Pedigree file not provided\n"
@@ -120,9 +127,13 @@ do
 		fi
 	done
 #4. Assemble
-	ABYSS -k25 -c0 -e0 AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa -o AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa
+#Optimal k for 31-mer=25. For 21-mer=19
+	if (( $mer == 31)); then k=25 ; elif (($mer == 21)); then k=19 ; else k=$(echo $mer-2 | bc) ; fi 
+	echo -e "Running ABySS with -k set to $k"
+	ABYSS -k$k -c0 -e0 AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa -o AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa
 #5. Extract
-	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 >= 61 {print $1"_"$2"\n"substr($4,10,31)}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa
+	ak=$(echo ${mer}+${mer}-1 | bc)
+	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk -v mer=$mer -v ak=$ak '$2 >= ak {print $1"_"$2"\n"substr($4,10,mer)}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa
 #6. Refilter against self for mers between boundaries.
 	jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa AFLAP_tmp/03/ParentalCounts/$g.jf${mer} | awk -v Low="$Lo" -v Up="$Up" '$2 >= Low && $2 <= Up {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
 #7. Refilter against other parents (another loop).
@@ -136,19 +147,19 @@ do
 	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa | paste - - | sort -k2,2 | join -1 2 -2 2 -o "2.1,0" - <(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2RC.fa | paste - - | sort -k2,2) | tr ' ' '\n' > AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa
 #9. Export stats.
 	FragCou=$(grep -c '^>' AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa)
-	Cou61=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 == 61' | wc -l)
-	Cou62=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk '$2 > 61' | wc -l)
+	Cou61=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk -v ak=$ak '$2 == ak' | wc -l)
+	Cou62=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk -v ak=$ak '$2 > ak' | wc -l)
 	MarCou=$(grep -c '^>' AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
-	Mar61=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk '$2 == 61' | wc -l)
-	Mar62=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk '$2 > 61' | wc -l)
+	Mar61=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk -v ak=$ak '$2 == ak' | wc -l)
+	Mar62=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk -v ak=$ak '$2 == ak' | wc -l)
 	echo -e "Report for $g
 Number of $mer-mers input into assembly: $Mlcou
 Number of fragments assembled: $FragCou
-Number of fragments == 61 bp: $Cou61
-Number of fragments > 61 bp: $Cou62
+Number of fragments == $ak bp: $Cou61
+Number of fragments > $ak bp: $Cou62
 Number of markers after refiltering: $MarCou
-Number of markers == 61 bp: $Mar61
-Number of markers > 61 bp: $Mar62
+Number of markers == $ak bp: $Mar61
+Number of markers > $ak bp: $Mar62
 " | tee $g.MarkerReport.txt
 	fi
 done
