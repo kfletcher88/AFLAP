@@ -1,5 +1,17 @@
 #!/bin/bash -l
-
+#################################################
+#	A shell script to generate and plot histograms of parental hashes
+#	It will try to calculate peaks, if the user does not define them in the pedigree file, though this may be error prone.
+#	Finally, it extracts k-mers it estimates to be single copy
+#################################################
+Name=$(basename $0)
+usage="${Name}; [-h] [-P] [-m] -- A script to obtain single copy k-mers from parental JELLYFISH hashes (AFLAP 2/6).
+Options
+	-h show this help message
+	-P Pedigree file, required. See AFLAP README for more information.
+	-m K-mer size. Optional. Default [31]
+Temporary files will be output to AFLAP_tmp/02."
+#Option block
 while getopts ':h:P:m:' option; do
         case "$option" in
                 h)  echo "$usage"
@@ -15,7 +27,6 @@ while getopts ':h:P:m:' option; do
                          ;;
         esac
 done
-
 #Check arguments.
 if [[ -z $Ped ]]; then
         echo -e "ERROR: Pedigree file not provided\n"
