@@ -54,11 +54,13 @@ JF=$(jellyfish --version)
 if [[ $JF =~ ^jellyfish ]]; then echo -e "\n$JF detected" >&2 ; else echo -e "\njellyfish not detected, please modify your PATH" >&2 ; exit 1 ; fi
 
 #Make new tmp for second script.
-mkdir -p AFLAP_tmp/02
+mkdir -p AFLAP_Results/Plots
 mkdir -p AFLAP_tmp/02/ParentalHisto
 echo "#Boundaries to follow" > AFLAP_tmp/02/Boundaries.txt
 #Obtain Histograms.
 echo -e "\nGenerating histograms for F0 to undergo linkage analysis."
+F1=$(awk '$2 == 1 {print $4, $5}' AFLAP_tmp/01/Crosses.txt | sort -u | wc -l)
+F2=$(awk '$2 == 2 {print $4, $5}' AFLAP_tmp/01/Crosses.txt | sort -u | wc -l)
 for g in `cat AFLAP_tmp/01/LA.txt`
   do
 	if [[ -e AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo ]] #1
@@ -67,7 +69,7 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 	echo -e "Histogram for $g ${mer}-mer detected. Will use those results.\nNot correct? Cancel and delete AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo, or rerun in clean directory"
 	else
 	#Generate histogram
-	jellyfish histo AFLAP_tmp/02/ParentalCounts/$g.jf${mer} > AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo
+	jellyfish histo AFLAP_tmp/01/ParentalCounts/$g.jf${mer} > AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo
 	echo -e "Histogram for $g generated"
 	fi #1
   #Check to see if Coverage boundaries provided by the user?
@@ -90,25 +92,27 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 	HomUp=$(printf %.0f $(echo $Peak*2.1 | bc -l))
 	HetLo=$(printf %.0f $(echo $Peak*0.4 | bc -l))
 	HetUp=$(printf %.0f $(echo $Peak*0.6 | bc -l))
+	Hom=0
+	Het=0
 		if (( $HomPeak > $HomLo && $HomTest < $HomUp )) #2
 		then
-		echo "Additional peak detected at $HomPeak"
+		echo "Additional Hom peak detected at $HomPeak"
 		Hom=1
 		fi #2
 		if (( $HetPeak > $HetLo && $HetPeak < $HetUp )) #2
 		then
-		echo "Additional peak detected at $HetPeak"
+		echo "Additional Het peak detected at $HetPeak"
 		Het=1
 		fi #2
 		if [[ $Hom == 1 && $Het != 1 ]] #2
 		then
 		echo -e "\nHeterozygous peak =  $Peak\nHomozygous peak = $HomPeak"
-			if [[ $Cross == 1 ]] #3
+			if (( $F1 > 0 )) #3
 			then
 			echo "Analyzing F1 population so boundaries around the heterozygous peak will be used."
 			Lo=$(printf %.0f $(echo $Peak*0.75 | bc -l))
 			Up=$(printf %.0f $(echo $Peak*1.5 | bc -l))
-			elif [[ $Cross == 2 ]]
+			elif (( $F2 > 0 ))
 			then
 			echo "Analyzing F2 population so boundaries around the homozygous peak will be used."
 			Lo=$(printf %.0f $(echo $HomPeak*0.75 | bc -l))
@@ -117,12 +121,12 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 		elif [[ $Hom != 1 && $Het == 1 ]]
 		then
 		echo -e "\nHeterozygous peak = $HetPeak\nHomozygous peak = $Peak"
-			if [[ $Cross == 1 ]] #3
+			if (( $F1 > 0 )) #3
                         then
                         echo "Analyzing F1 population so boundaries around the heterozygous peak will be used."
                         Lo=$(printf %.0f $(echo $HetPeak*0.75 | bc -l))
                         Up=$(printf %.0f $(echo $HetPeak*1.5 | bc -l))
-                        elif [[ $Cross == 2 ]]
+                        elif (( $F2 > 0 ))
                         then
                         echo "Analyzing F2 population so boundaries around the homozygous peak will be used."
                         Lo=$(printf %.0f $(echo $Peak*0.75 | bc -l))
@@ -131,12 +135,12 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 		elif [[ $Hom == 1 && $Het == 1 ]]
 		then
 		echo -e "\nLooks like three peaks have been found. That's going to make things tricky!\nPeak 1 (Het) = $HetPeak\nPeak 2 (Het) = $Peak\nPeak 3 (Hom) = $HomPeak"
-			if [[ $Cross == 1 ]] #3
+			if (( $F1 > 0 )) #3
                         then
                         echo "Analyzing F1 population so boundaries around the two heterozygous peaks will be used."
                         Lo=$(printf %.0f $(echo $HetPeak*0.75 | bc -l))
                         Up=$(printf %.0f $(echo $Peak*1.5 | bc -l))
-                        elif [[ $Cross == 2 ]]
+                        elif (( $F2 > 0 ))
                         then
                         echo "Analyzing F2 population so boundaries around the homozygous peak will be used, however it seems like there is a large amount of heterozygosity"
                         Lo=$(printf %.0f $(echo $HomPeak*0.75 | bc -l))
@@ -156,10 +160,10 @@ for g in `cat AFLAP_tmp/01/LA.txt`
   then 
   echo -e "\n$g ${mer}-mer previously extracted between $Lo and $Up. Delete ${g}_m${mer}_L${Lo}_U${Up}.fa to rebuild." 
   else
-  jellyfish dump -U $Up -L $Lo -o AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/02/ParentalCounts/$g.jf${mer}
+  jellyfish dump -U $Up -L $Lo -o AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/01/ParentalCounts/$g.jf${mer}
   Kco=$(grep -c '^>'  AFLAP_tmp/02/ParentalHisto/${g}_m${mer}_L${Lo}_U${Up}.fa) 
   echo "$Kco ${mer}-mers extracted from $g"
-  Rscript $DIR/HistoPlot.R AFLAP_tmp/02/ParentalHisto/$g.${mer}.histo $Lo $Up AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png
+  Rscript $DIR/HistoPlot.R AFLAP_tmp/02/ParentalHisto/${g}.${mer}.histo $Lo $Up AFLAP_Results/Plots/${g}_m${mer}_L${Lo}_U${Up}_histo.png
   fi
   done
 exit

@@ -113,11 +113,11 @@ do
 	for f in `cat AFLAP_tmp/03/${g}_CrossedTo.txt`
 	do
 	# Identify opposing parental hashes.
-		if  [[ -e AFLAP_tmp/03/ParentalCounts/$f.jf${mer} ]]
+		if  [[ -e AFLAP_tmp/01/ParentalCounts/$f.jf${mer} ]]
 		then
 		echo "Intersecting $g with $f"
 	# Filter and overwrite input.
-		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/03/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i,"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt
+		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa AFLAP_tmp/01/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i,"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt
 		mv AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.txt AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa
 		Mlcou=$(grep -c '^>' AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}.fa)
 		echo "${Mlcou} $g ${mer}-mers remain after filtering against $f"
@@ -135,11 +135,11 @@ do
 	ak=$(echo ${mer}+${mer}-1 | bc)
 	cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk -v mer=$mer -v ak=$ak '$2 >= ak {print $1"_"$2"\n"substr($4,10,mer)}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa
 #6. Refilter against self for mers between boundaries.
-	jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa AFLAP_tmp/03/ParentalCounts/$g.jf${mer} | awk -v Low="$Lo" -v Up="$Up" '$2 >= Low && $2 <= Up {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
+	jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark2.fa AFLAP_tmp/01/ParentalCounts/$g.jf${mer} | awk -v Low="$Lo" -v Up="$Up" '$2 >= Low && $2 <= Up {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
 #7. Refilter against other parents (another loop).
 	for f in `cat AFLAP_tmp/03/${g}_CrossedTo.txt`
 	do
-		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa AFLAP_tmp/03/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa
+		jellyfish query -s AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa AFLAP_tmp/01/ParentalCounts/$f.jf${mer} | awk '$2 == 0 {print ">"++i"\n"$1}' > AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa
 		mv AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark4.fa AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark3.fa
 	done
 #8. Export final marker set with ABySS conserved headers.
