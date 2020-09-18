@@ -35,7 +35,14 @@ while getopts ':khP:t:m:r:L:' option; do
 done
 
 if [[ -z $rem && -z $Ped ]]; then echo -e "Either pedigree file (-P), or progeny individual intermediate data to remove (-r) required" ; echo "$usage" ; exit 1 ; fi
-
+if [[ -z $thread ]]; then
+echo "Threads not specified, will proceed with default [4]"
+thread=4
+fi
+if [[ -z $mer ]]; then
+echo "mer size not specified, will proceed with default [31]"
+mer=31
+fi
 if [[ -z $rem ]]; then
 DIR=$(dirname $0)
 #00 Dependency check
