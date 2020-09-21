@@ -146,7 +146,7 @@ for g in `cat AFLAP_tmp/01/F0.txt`
 	if [[ -e AFLAP_tmp/01/ParentalCounts/$g.jf${mer} ]]
 	then
 #If so, skip.
-	echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_tmp/01/ParentalCounts/$g.fj${mer}, or run from clean directory"
+	echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_tmp/01/ParentalCounts/$g.jf${mer}, or run from clean directory"
 	else
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
@@ -171,7 +171,7 @@ for g in `cat AFLAP_tmp/01/Prog.txt`
         if [[ -e AFLAP_tmp/01/ProgCounts/$g.jf${mer} ]]
         then
 #If so, skip.
-        echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_tmp/01/ProgCounts/$g.fj${mer}, or run from clean directory"
+        echo -e "$mer hash detected for $g. Skipping. \n\tNot correct? Cancel and delete AFLAP_tmp/01/ProgCounts/$g.jf${mer}, or run from clean directory"
         else
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
