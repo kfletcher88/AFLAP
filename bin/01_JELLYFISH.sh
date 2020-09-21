@@ -67,6 +67,10 @@ fi
 awk '$2 == 0 {print $1}' $Ped | sort -u > AFLAP_tmp/01/F0.txt
 Pcou=$(wc -l AFLAP_tmp/01/F0.txt | awk '{print $1}')
 
+#Check the Pedigree file, so that parents are specified:
+PedErr=$(awk '$2 != 0 && NR != 5' $Ped | wc -l)
+if (( $PedErr > 0 )); then echo -e "Pedigree file not formatted correctly! Five columns should be present on every progeny line with the fourth and fifth specifying the parents. E.g:\n\t[ProgLabel]\t[1/2]\t[READS]\t[Parent1]\t[Parent2]"; exit 1 ; fi
+
 if [[ $Pcou == 2 ]]
 then
 echo -e "$Pcou parents detected. Simple! Beginning k-mer counting"
