@@ -10,7 +10,7 @@ Options
         -m K-mer size. Optional. Default [31]
 Temporary files will be output to AFLAP_tmp/05."
 #Option block
-while getopts ':hP:m:' option; do
+while getopts ':LhP:m:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -19,6 +19,9 @@ while getopts ':hP:m:' option; do
                          ;;
                 m)  mer=$OPTARG
                          ;;
+		L)  CovCut=1
+		    echo "Low Coverage setting used"
+			 ;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
                     exit 1
@@ -26,6 +29,8 @@ while getopts ':hP:m:' option; do
         esac
 done
 
+#SetDefault CovCut
+if [[ -z $CovCut ]] ; then CovCut=2 ; echo -e "\nDefault coverage cut-off = 2." ; fi
 if [[ -e AFLAP_tmp/01/LA.txt && -e AFLAP_tmp/02/Boundaries.txt ]]
 then
 echo -e "\nIntermediate files detected"
@@ -82,7 +87,7 @@ do
 			fi
 		done | awk -v OFS='\t' '{if ($2 == 0) $3 = 0; print $0}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
 		Rscript $DIR/KmerCovXMarkerCount.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_KmerCovXMarkerCount.png
-		LowCov=$(awk '$3 < 2' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt | wc -l)
+		LowCov=$(awk -v CC=$CovCut '$3 < CC' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt | wc -l)
 		if (( $LowCov >= 1))
 		then
 		awk '$3 < 2 {print $1" appears to be low coverage, will be excluded"}' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
@@ -91,7 +96,7 @@ do
 #Create header.
 		fi
 	cd  AFLAP_tmp/05/FilteredCall
-	for v in `awk '$3 >= 2 {print $1}' ../../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt` 
+	for v in `awk -v CC=$CovCut '$3 >= CC {print $1}' ../../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt` 
 	do
 		ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
 	done

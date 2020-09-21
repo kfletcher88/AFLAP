@@ -10,7 +10,7 @@ Options
 	-r Individual to remove. All other options will be ignored.
 	-L LOD score - Will run LepMap3 with minimum LOD."
 
-while getopts ':khP:t:m:r:L:' option; do
+while getopts ':kxhP:t:m:r:L:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -26,6 +26,8 @@ while getopts ':khP:t:m:r:L:' option; do
 		k)  kin=1
 			;;
 		L)  LOD=$OPTARG
+			;;
+		x)  LowCov=1
 			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
@@ -55,7 +57,7 @@ $DIR/bin/03_ObtainMarkers.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 4/6\e[0m" &&
 $DIR/bin/04_Genotyping.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
-$DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer &&
+if (( $LowCov == 1 )); then $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer fi && 
 if [[ $kin == 1 ]]; then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
