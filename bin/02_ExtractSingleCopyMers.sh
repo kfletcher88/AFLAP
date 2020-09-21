@@ -152,7 +152,7 @@ for g in `cat AFLAP_tmp/01/LA.txt`
 		Lo=$(printf %.0f $(echo $Peak*0.75 | bc -l))
 		Up=$(printf %.0f $(echo $Peak*1.5 | bc -l))
  		fi #2
-	echo -e "Peak boundary estimation complete. They are visible on AFLAP_Results/Plots/$g_m${mer}_L${Lo}_U${Up}_histo.png\n"
+	echo -e "Peak boundary estimation complete. They are visible on AFLAP_Results/Plots/${g}_m${mer}_L${Lo}_U${Up}_histo.png\n"
 	fi #1
   echo "Lower boundary for $g set to $Lo, upper boundary to $Up"
   echo -e "$g\t$Lo\t$Up" >> AFLAP_tmp/02/Boundaries.txt
