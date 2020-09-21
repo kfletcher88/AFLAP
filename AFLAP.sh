@@ -57,7 +57,7 @@ $DIR/bin/03_ObtainMarkers.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 4/6\e[0m" &&
 $DIR/bin/04_Genotyping.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
-if (( $LowCov == 1 )); then $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer fi && 
+if (( $LowCov == 1 )); then $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer ; fi && 
 if [[ $kin == 1 ]]; then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
