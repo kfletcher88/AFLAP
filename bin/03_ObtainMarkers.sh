@@ -151,7 +151,7 @@ do
 	Cou62=$(cat AFLAP_tmp/03/${g}_m${mer}_L${Lo}_U${Up}_Mark1.fa | paste - - | awk -v ak=$ak '$2 > ak' | wc -l)
 	MarCou=$(grep -c '^>' AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
 	Mar61=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk -v ak=$ak '$2 == ak' | wc -l)
-	Mar62=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk -v ak=$ak '$2 == ak' | wc -l)
+	Mar62=$(cat AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa | paste - - | sed 's/_/ /' | awk -v ak=$ak '$2 > ak' | wc -l)
 	echo -e "Report for $g
 Number of $mer-mers input into assembly: $Mlcou
 Number of fragments assembled: $FragCou
