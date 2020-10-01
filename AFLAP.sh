@@ -8,9 +8,11 @@ Options
         -m K-mer size. Optional. Default [31]
         -t Threads for JELLYFISH counting. Optional. Default [4]
 	-r Individual to remove. All other options will be ignored.
-	-L LOD score - Will run LepMap3 with minimum LOD."
+	-L LOD score - Will run LepMap3 with minimum LOD.
+	-d Lower boundary for marker cut off. Can be used to filter for segregation distortion [0.2].
+	-D Upper boundary for marker cut off. Can be used to filter for segregation distortion [0.8]."
 
-while getopts ':kxhP:t:m:r:L:' option; do
+while getopts ':kxhP:t:m:r:L:d:D:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -29,6 +31,10 @@ while getopts ':kxhP:t:m:r:L:' option; do
 			;;
 		x)  LowCov=1
 			;;
+		d)  Sdl=$OPTARG
+			;;
+		D)  sdu=$OPTARG
+			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
                     exit 1
@@ -41,6 +47,8 @@ if [[ -z $thread ]]; then
 echo "Threads not specified, will proceed with default [4]"
 thread=4
 fi
+if [[ -z $Sdl ]]; then Sdl=0.2 ; fi
+if [[ -z $Sdu ]]; then Sdu=0.8 ; fi
 if [[ -z $mer ]]; then
 echo "mer size not specified, will proceed with default [31]"
 mer=31
@@ -57,7 +65,7 @@ $DIR/bin/03_ObtainMarkers.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 4/6\e[0m" &&
 $DIR/bin/04_Genotyping.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
-if [[ $LowCov == 1 ]]; then $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -P $Ped -m $mer ; fi && 
+if [[ $LowCov == 1 ]]; then $DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer ; fi && 
 if [[ $kin == 1 ]]; then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
