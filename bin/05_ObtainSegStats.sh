@@ -72,6 +72,8 @@ do
 			Cov=$(awk '{print $2}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt | sort -n | uniq -c | tail -n+2 | sort -nrk1,1 | head -n 1 | awk '{print $2}')
 			if [[ $Cov == 1 ]]
 				then
+				Not1=0
+				Is1=0
 				Not1=$(awk '{print $2}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt | sort -n | uniq -c | awk 'NR > 5 {sum += $1}END{print sum}')
 				Is1=$(awk '{print $2}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt | sort -n | uniq -c | awk 'NR == 2 {sum += $1}END{print sum}')
 				if (( $Not1 > $Is1 ))
@@ -101,7 +103,7 @@ do
 		ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
 	done
 	cd ../
-	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
+	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk '{for (i=3; i<=NF;i++) j+=$i; if(j/(NF-2) >= 0.2 && j/(NF-2) <= 0.8) print $0; j=0 }' > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
 	ls FilteredCall/* | sed "s/_${g}.*//" | sed 's/.*\///' > ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt
 	cat <(cat ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt | tr '\n' '\t' | sed 's/\t$//' | awk -v OFS='\t' '{print "MarkerID", "MakerSeq", $0}') ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv > ../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_$P0.GT.tsv
 #Removing means isolates can be excluded by editing the Pedigree file
