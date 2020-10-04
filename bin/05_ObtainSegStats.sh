@@ -24,7 +24,7 @@ while getopts ':LhP:m:d:D:' option; do
 			 ;;
 		D)  SegDistU=$OPTARG
 			 ;;
-		d) SegDistL=$OPTARG
+		d)  SegDistL=$OPTARG
 			 ;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
@@ -107,12 +107,7 @@ do
 		ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
 	done
 	cd ../
-	if [[ -z $SegDistU ]]; then
-	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk '{for (i=3; i<=NF;i++) j+=$i; if(j/(NF-2) >= 0.2 && j/(NF-2) <= 0.8) print $0; j=0 }' > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
-	else
-	echo -e "User specifified marker boundaries provided. Genotype table will be built with those in mind."
-	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk -v SDU=$SegDistU -v SDL=$SegDistL '{for (i=3; i<=NF;i++) j+=$i; if(j >= SDL && j <= SDU) print $0 ; j=0 }' - > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
-	fi
+	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk -v SDU=$SegDistU -v SDL=$SegDistL '{for (i=3; i<=NF;i++) j+=$i; if(j/(NF-2) >= SDL && j/(NF-2) <= SDU) print $0 ; j=0 }' - > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
 	if (( $CovCut == 1 )); then 
 	echo -e "AFLAP ran in low coverage mode. It is possible that two peaks will be shown in AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerSeg.png\nIf that is the case please rerun AFLAP.sh providing -d and -D for lower and upper limits for marker filtering."
 	fi
