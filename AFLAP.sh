@@ -10,7 +10,10 @@ Options
 	-r Individual to remove. All other options will be ignored.
 	-L LOD score - Will run LepMap3 with minimum LOD.
 	-d Lower boundary for marker cut off. Can be used to filter for segregation distortion [0.2].
-	-D Upper boundary for marker cut off. Can be used to filter for segregation distortion [0.8]."
+	-D Upper boundary for marker cut off. Can be used to filter for segregation distortion [0.8].
+	-k Run kinship estimation.
+	-x Run with low coverage parameters.
+	-U Maximum number of markers to output in the genotype tables output under ./AFLAP_Results/"
 
 while getopts ':kxhP:t:m:r:L:d:D:' option; do
         case "$option" in
