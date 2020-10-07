@@ -15,7 +15,7 @@ Options
 	-x Run with low coverage parameters.
 	-U Maximum number of markers to output in the genotype tables output under ./AFLAP_Results/"
 
-while getopts ':kxhP:t:m:r:L:d:D:' option; do
+while getopts ':kxhP:t:m:r:L:d:D:U:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -37,6 +37,8 @@ while getopts ':kxhP:t:m:r:L:d:D:' option; do
 		d)  Sdl=$OPTARG
 			;;
 		D)  sdu=$OPTARG
+			;;
+		U)  Max=$OPTARG
 			;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
@@ -70,6 +72,7 @@ $DIR/bin/04_Genotyping.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
 if [[ $LowCov == 1 ]]; then $DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer ; fi && 
 if [[ $kin == 1 ]]; then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
+if [[ -n $Max ]]; then echo -e "\n\e[31mDownsampling markers\e[0m" ; $DIR/bin/05c_MarkerReduction.sh -P $Ped -m $mer -U $Max ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&
 $DIR/bin/06_ExportToLepMap3.sh -P $Ped -m $mer &&
 if [[ -z $LOD ]]; then echo -e "No LOD cutoffs provided, so AFLAP will not run LepMap3. LOD cutoffs can be provided with the -L flag" ;
