@@ -33,9 +33,9 @@ while getopts ':hP:m:L:T:' option; do
 done
 
 if [[ -z $Ped || -z $LOD || -z $mer ]]; then echo "One or more options not set. Are you trying to run this outside of the AFLAP control script?" ; echo "$usage" ; exit 1 ; fi
-if [[ -z $thread ]]; then
+if [[ -z $Threads ]]; then
 echo "Threads not specified, will proceed with default [4]"
-thread=4
+Threads=4
 fi
 if [[ -e AFLAP_tmp/01/LA.txt && -e AFLAP_tmp/02/Boundaries.txt ]]
 then
