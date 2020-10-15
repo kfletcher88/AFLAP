@@ -68,9 +68,15 @@ $DIR/bin/02_ExtractSingleCopyMers.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 3/6\e[0m" &&
 $DIR/bin/03_ObtainMarkers.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 4/6\e[0m" &&
+if [[ $LowCov == 1 ]]; then 
+$DIR/bin/04_Genotyping.sh -P $Ped -m $mer -L &&
+echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
+$DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer -L
+else
 $DIR/bin/04_Genotyping.sh -P $Ped -m $mer &&
 echo -e "\n\e[31mBeginning Step 5/6\e[0m" &&
-if [[ $LowCov == 1 ]]; then $DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer -L ; else $DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer ; fi && 
+$DIR/bin/05_ObtainSegStats.sh -d $Sdl -D $Sdu -P $Ped -m $mer
+fi
 if [[ $kin == 1 ]]; then echo -e "\n\e[31mRunning Kmer kinship\e[0m" ; $DIR/bin/05b_KmerKinship.sh -P $Ped -m $mer ; fi &&
 if [[ -n $Max ]]; then echo -e "\n\e[31mDownsampling markers\e[0m" ; $DIR/bin/05c_MarkerReduction.sh -P $Ped -m $mer -U $Max ; fi &&
 echo -e "\n\e[31mBeginning Step 6/6\e[0m" &&

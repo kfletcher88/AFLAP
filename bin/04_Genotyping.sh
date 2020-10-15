@@ -9,9 +9,10 @@ Options
 	-h show this help message
 	-P Pedigree file, required. See AFLAP README for more information.
 	-m K-mer size. Optional. Default [31]
+	-L Run in low coverage mode
 Temporary files will be output to AFLAP_tmp/04."
 #Option block
-while getopts ':hP:m:' option; do
+while getopts ':LhP:m:' option; do
         case "$option" in
                 h)  echo "$usage"
                          exit
@@ -20,12 +21,18 @@ while getopts ':hP:m:' option; do
                          ;;
                 m)  mer=$OPTARG
                          ;;
+                L)  CovCut=1
+                    echo "Low Coverage setting used"
+                         ;;
                 \?) printf "illegal option: -%s\n\n" "$OPTARG" >&2
                     echo "$usage"
                     exit 1
                          ;;
         esac
 done
+
+#SetDefault CovCut
+if [[ -z $CovCut ]] ; then CovCut=2 ; echo -e "\nDefault coverage cut-off = 2." ; fi
 
 if [[ -e AFLAP_tmp/01/LA.txt && -e AFLAP_tmp/02/Boundaries.txt ]]
 then
@@ -52,7 +59,7 @@ do
 	Lo=$(awk -v var="$g" '$1 == var {print $2}' AFLAP_tmp/02/Boundaries.txt)
 	Up=$(awk -v var="$g" '$1 == var {print $3}' AFLAP_tmp/02/Boundaries.txt)
 	if [[ -e AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa ]]
-	then 
+	then
 		Mcou=$(grep -c '^>' AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa)
 		echo -e "$Mcou markers identified in AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa. These will be surveyed against progeny"
 	else
@@ -66,8 +73,7 @@ do
 			echo -e "Genotype of $g markers for $h previously calulated, will use these"
 			else
 			jellyfish query -s AFLAP_tmp/03/ParentalMarkers/${g}_m${mer}_MARKERS_L${Lo}_U${Up}_$P0.fa AFLAP_tmp/01/ProgCounts/$h.jf${mer} > AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
-#Need a low cov and high cov option
-			awk '{if($2 > 1) print 1; else print 0}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
+			awk -v CC=$CovCut '{if($2 >= CC) print 1; else print 0}' AFLAP_tmp/04/Count/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt > AFLAP_tmp/04/Call/${h}_${g}_m${mer}_L${Lo}_U${Up}_$P0.txt
 			fi
 		else
 			echo -e "No hash for $h detected. Please rerun 01_JELLYFISH.sh"
