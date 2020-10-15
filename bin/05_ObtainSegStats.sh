@@ -94,23 +94,32 @@ do
 		done | awk -v OFS='\t' '{if ($2 == 0) $3 = 0; print $0}' > AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
 		Rscript $DIR/KmerCovXMarkerCount.R AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_KmerCovXMarkerCount.png
 		LowCov=$(awk -v CC=$CovCut '$3 < CC' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt | wc -l)
-		if (( $LowCov >= 1))
+		if (( $CovCut ==2 ))
 		then
-		awk '$3 < 2 {print $1" appears to be low coverage, will be excluded"}' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
+			if (( $LowCov >= 1 ))
+			then
+			awk -v CC=$CovCut '$3 < CC {print $1" appears to be low coverage, will be excluded"}' AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt
 #Loop through the ones which are high coverage and link files into a new directory.
 #Build filtered genotype table
 #Create header.
+			fi
+		cd  AFLAP_tmp/05/FilteredCall
+		for v in `awk -v CC=$CovCut '$3 >= CC {print $1}' ../../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt` 
+		do
+			ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
+		done
+		cd ../
+		awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk -v SDU=$SegDistU -v SDL=$SegDistL '{for (i=3; i<=NF;i++) j+=$i; if(j/(NF-2) >= SDL && j/(NF-2) <= SDU) print $0 ; j=0 }' - > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
+		else
+		echo -e "AFLAP ran in low coverage mode. Coverage cut-off not run. Please manually remove any isolates you wish to exclude from $Ped and rerun AFLAP.\n\nIt is possible that two peaks will be shown in AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerSeg.png\nIf that is the case please rerun AFLAP.sh providing -d and -D for lower and upper limits for marker filtering."
+		cd  AFLAP_tmp/05/FilteredCall
+		for v in `awk '{print $1}' ../../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt` 
+		do
+			ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
+		done
+		cd ../
+		awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk -v SDU=$SegDistU -v SDL=$SegDistL '{for (i=3; i<=NF;i++) j+=$i; if(j/(NF-2) >= SDL && j/(NF-2) <= SDU) print $0 ; j=0 }' - > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
 		fi
-	cd  AFLAP_tmp/05/FilteredCall
-	for v in `awk -v CC=$CovCut '$3 >= CC {print $1}' ../../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerCount.txt` 
-	do
-		ln -s ../../04/Call/${v}_${g}_m${mer}_L${Lo}_U${Up}_${P0}.txt .
-	done
-	cd ../
-	awk -v OFS='\t' '{print $2, $1}' ../04/${g}_m${mer}_L${Lo}_U${Up}_$P0.Genotypes.MarkerID.tsv | paste - FilteredCall/* | awk -v SDU=$SegDistU -v SDL=$SegDistL '{for (i=3; i<=NF;i++) j+=$i; if(j/(NF-2) >= SDL && j/(NF-2) <= SDU) print $0 ; j=0 }' - > ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv
-	if (( $CovCut == 1 )); then 
-	echo -e "AFLAP ran in low coverage mode. It is possible that two peaks will be shown in AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_${P0}_MarkerSeg.png\nIf that is the case please rerun AFLAP.sh providing -d and -D for lower and upper limits for marker filtering."
-	fi
 	ls FilteredCall/* | sed "s/_${g}.*//" | sed 's/.*\///' > ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt
 	cat <(cat ${g}_m${mer}_L${Lo}_U${Up}_$P0.ProgHeader.txt | tr '\n' '\t' | sed 's/\t$//' | awk -v OFS='\t' '{print "MarkerID", "MakerSeq", $0}') ${g}_m${mer}_L${Lo}_U${Up}_$P0.Filtered.Genotypes.MarkerID.tsv > ../../AFLAP_Results/${g}_m${mer}_L${Lo}_U${Up}_$P0.GT.tsv
 #Removing means isolates can be excluded by editing the Pedigree file
