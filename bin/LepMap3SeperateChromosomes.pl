@@ -27,6 +27,7 @@ $prefix =~ s{\.[^.]+$}{};
 print STDERR "Input Genotype table is $input\n";
 print STDERR "Minimum LOD score is $LOD\n";
 my $output = 'AFLAP_Results/LOD'.$LOD.'/'.$prefix.'.LOD'.$LOD.'.txt';
+my $outfre = 'AFLAP_Results/LOD'.$LOD.'/'.$prefix.'.LOD'.$LOD.'.fre';
 my $error  = 'AFLAP_Results/LOD'.$LOD.'/'.$prefix.'.LOD'.$LOD.'.stderr';
 print STDERR "Results will be written to $output\n";
 
@@ -38,6 +39,7 @@ my $LepDir = $opt_d || $dir.'/../ThirdParty/LepMap3/bin';
 print STDERR "Beginning LepMap3\n\n";
 system("mkdir -p AFLAP_Results/LOD$LOD");
 system("java -cp $LepDir SeparateChromosomes2 data=$input lodLimit=$LOD numThreads=$Threads > $output 2> $error");
+system("awk 'NR > 1' $output | sort -n | uniq -c > $outfre");
 print STDERR "LepMap3 complete with LOD limit = $LOD";
 exit;
 
