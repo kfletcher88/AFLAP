@@ -109,7 +109,7 @@ do
 			cat \
 			<(cat \
 			<(echo -e "CHR CHR CHR CHR CHR CHR\nPOS POS POS POS POS POS\n${g}x${P0} $g 0 0 1 0\n${g}x${P0} $P0 0 0 2 0\n${g}x${P0} DUM1 $g $P0 1 0\n${g}x${P0} DUM2 $g $P0 2 0") \
-			<(awk '{print P1"x"P2, $1, "DUM1", "DUM2", 0, 0}' AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt) \
+			<(awk -v P1=$g -v P2=$P0 '{print P1"x"P2, $1, "DUM1", "DUM2", 0, 0}' AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt) \
 			| awk -f $DIR/Transpose.awk -) \
 			<(paste \
 			<(awk -v OFS='\t' '{print $1, $2}'  AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv) \
@@ -120,8 +120,8 @@ do
 			then
 			cat \
 			<(cat \
-			<(echo -e "CHR CHR CHR CHR CHR CHR\nPOS POS POS POS POS POS\n${P0}x${g} $P0 0 0 1 0\n${P0}x${g} $g 0 0 2 0\n${g}x${P0} DUM1 $P0 $g 1 0\n${g}x${P0} DUM2 $P0 $g 2 0") \
-			<(awk '{print P1"x"P2, $1, "DUM1", "DUM2", 0, 0}' AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt) \
+			<(echo -e "CHR CHR CHR CHR CHR CHR\nPOS POS POS POS POS POS\n${P0}x${g} $P0 0 0 1 0\n${P0}x${g} $g 0 0 2 0\n${P0}x${g} DUM1 $P0 $g 1 0\n${P0}x${g} DUM2 $P0 $g 2 0") \
+			<(awk -v P1=$P0 -v P2=$g '{print P1"x"P2, $1, "DUM1", "DUM2", 0, 0}' AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.ProgHeader.txt) \
 			| awk -f $DIR/Transpose.awk -) \
 			<(paste \
 			<(awk -v OFS='\t' '{print $1, $2}'  AFLAP_tmp/05/${g}_m${mer}_L${Lo}_U${Up}_${P0}.Filtered.Genotypes.MarkerID.tsv) \
