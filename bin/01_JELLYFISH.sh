@@ -151,6 +151,7 @@ for g in `cat AFLAP_tmp/01/F0.txt`
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
+	for r in $Reads ; do if [[ ! -e $r ]]; then echo -e "file $r not found, terminating" ; exit 1 ; fi ; done
 	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_tmp/01/ParentalCounts/$g.jf${mer} <(zcat $Reads) &&
 #Check successful, exit if not.
 		if [[ ! -f AFLAP_tmp/01/ParentalCounts/$g.jf${mer} ]]; then
@@ -176,6 +177,7 @@ for g in `cat AFLAP_tmp/01/Prog.txt`
 #If not, generate it.
 	echo -e "Begining k-mer counting for $g"
 	Reads=$(awk -v var="$g" '$1 == var {print $3}' $Ped | tr '\n' ' ')
+	for r in $Reads ; do if [[ ! -e $r ]]; then echo -e "file $r not found, terminating" ; exit 1 ; fi ; done
 	jellyfish count -s 1G -t $thread -m $mer -C -o AFLAP_tmp/01/ProgCounts/$g.jf${mer} <(zcat $Reads) &&
 		if [[ ! -f AFLAP_tmp/01/ProgCounts/$g.jf${mer} ]]; then
 		echo -e "JELLYFISH for $g did not complete. Is the file gzipped? Exiting" ; exit 1
