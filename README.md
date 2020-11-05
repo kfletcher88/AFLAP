@@ -38,7 +38,7 @@ Field 3 is the location of the read file.
 
 One individual may be split over multiple lines in instances where multiple read files are present. AFLAP will combine lines that share identical labels (field 1).
 
-Aditional fields:\
+### Aditional fields:\
 For parents (F0), field 4 and 5 can be used to manually set the k-mer cutoffs used for makrer assembly. If these fields are not set, AFLAP will try to estimate these cutoffs, which may not be perfect.\
 Note AFLAP will plot the curve with the cut-offs supplied or calculated. These can be used to edit the Pedigree file and rerun AFLAP. Rerunning AFLAP is efficient as it will reuse all applicable, previously calculated results.\
 For progeny (F1 and F2), field 4 and 5 can be used to specify the parents. Not currently implemented, but is foundational for a potential multi-cross analysis enhancement.\
@@ -50,7 +50,7 @@ An example pedigree is available in:
 
 It looks like this:
 ```
-#label, F, Read1, OptionalField1, OptionalField2
+#label	F	Read	LowerCoverage/Parent1	UpperCoverage/Parent2
 Col	0	ReadsEBI/SRR5882797_1.fastq.gz	32	105
 Col	0	ReadsEBI/SRR5882797_2.fastq.gz	32	105
 Ler	0	ReadsEBI/SRR3166543_1.fastq.gz	40	177
