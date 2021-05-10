@@ -42,6 +42,7 @@ One individual may be split over multiple lines in instances where multiple read
 ### Additional fields
 For parents (F0), field 4 and 5 can be used to manually set the k-mer cutoffs used for makrer assembly. If these fields are not set, AFLAP will try to estimate these cutoffs, which may not be perfect.\
 Note AFLAP will plot the curve with the cut-offs supplied or calculated. These can be used to edit the Pedigree file and rerun AFLAP. Rerunning AFLAP is efficient as it will reuse all applicable, previously calculated results.\
+If the parents are low coverage or GBS then the estimates may be very far off.\
 For progeny (F1 and F2), field 4 and 5 can be used to specify the parents. Not currently implemented, but is foundational for a potential multi-cross analysis enhancement.
 
 An example pedigree is available in:
