@@ -1,4 +1,3 @@
-[![DOI](https://zenodo.org/badge/264294570.svg)](https://zenodo.org/badge/latestdoi/264294570)
 # Assembly Free Linkage Analysis Pipeline
 
 ## About
