@@ -70,6 +70,10 @@ fi
 #Make new tmp and Intermdiate directories:
 mkdir -p AFLAP_tmp/03/ParentalMarkers
 
+#Strip '#' from pedigree file
+awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
+Ped=AFLAP_tmp/Pedigree.txt
+
 #0. Dependency Check
 
 #a. ABYSS

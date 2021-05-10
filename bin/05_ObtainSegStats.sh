@@ -45,11 +45,16 @@ fi
 mkdir -p AFLAP_tmp/05/FilteredCall
 mkdir -p AFLAP_tmp/05/SegregationInformation
 mkdir -p AFLAP_Results
+
 #BASH math
 kk=$(printf %.0f $(echo $mer+$mer-1 | bc -l))
 
 #Find bin directory for Rscripts
 DIR=$(dirname $0)
+
+#Strip '#' from pedigree file
+awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
+Ped=$DIR/AFLAP_tmp/Pedigree.txt
 
 #Loop through LA to run iteration for each parent required
 for g in `cat AFLAP_tmp/01/LA.txt`

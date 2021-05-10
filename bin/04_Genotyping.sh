@@ -50,6 +50,10 @@ if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected"; else echo "jellyfish not d
 mkdir -p AFLAP_tmp/04/Count
 mkdir -p AFLAP_tmp/04/Call
 
+#Strip '#' from pedigree file
+awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
+Ped=AFLAP_tmp/Pedigree.txt
+
 #Check For markers
 for g in `cat AFLAP_tmp/01/LA.txt`
 do

@@ -57,6 +57,11 @@ if [[ $JF =~ ^jellyfish ]]; then echo -e "\n$JF detected" >&2 ; else echo -e "\n
 mkdir -p AFLAP_Results/Plots
 mkdir -p AFLAP_tmp/02/ParentalHisto
 echo "#Boundaries to follow" > AFLAP_tmp/02/Boundaries.txt
+
+#Strip '#' from pedigree file
+awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
+Ped=$DIR/AFLAP_tmp/Pedigree.txt
+
 #Obtain Histograms.
 echo -e "\nGenerating histograms for F0 to undergo linkage analysis."
 F1=$(awk '$2 == 1 {print $4, $5}' AFLAP_tmp/01/Crosses.txt | sort -u | wc -l)

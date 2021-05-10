@@ -53,6 +53,10 @@ if [[ $JF =~ ^jellyfish ]]; then echo "$JF detected"; else echo "jellyfish not d
 #Make a tmp directory
 mkdir -p AFLAP_tmp/01
 
+#Strip '#' from pedigree file
+awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
+Ped=AFLAP_tmp/Pedigree.txt
+
 #Pedigree file check
 #Check labels
 Flab=$(awk '$2 > 2' $Ped | wc -l)

@@ -37,6 +37,11 @@ fi
 mkdir -p AFLAP_tmp/06
 DIR=$(dirname $0)
 
+#Strip '#' from pedigree file
+awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
+Ped=$DIR/AFLAP_tmp/Pedigree.txt
+
+
 #Inspect pedigeee file, decide if F1 or F2.
 #Loop through per parent builing genotype file, LepMap3 format.
 ###########################################################
