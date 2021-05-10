@@ -1,4 +1,3 @@
-#label, F, Read1, OptionalField1, OptionalField2
 Col	0	ReadsEBI/SRR5882797_1.fastq.gz	32	105
 Col	0	ReadsEBI/SRR5882797_2.fastq.gz	32	105
 Ler	0	ReadsEBI/SRR3166543_1.fastq.gz	40	177
