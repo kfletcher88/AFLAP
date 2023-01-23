@@ -60,7 +60,7 @@ echo "#Boundaries to follow" > AFLAP_tmp/02/Boundaries.txt
 
 #Strip '#' from pedigree file
 awk '$0 !~ /#/' $Ped > AFLAP_tmp/Pedigree.txt
-Ped=$DIR/AFLAP_tmp/Pedigree.txt
+Ped=AFLAP_tmp/Pedigree.txt
 
 #Obtain Histograms.
 echo -e "\nGenerating histograms for F0 to undergo linkage analysis."
