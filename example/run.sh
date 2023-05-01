@@ -1,2 +1,2 @@
 #!/bin/bash -l
-for g in `cat Accession.txt` ; do ../00_NCBIdload.sh $g ; done 
+for g in `cat Accession.txt` ; do ../bin/00_ReadDload.sh $g ; done 
